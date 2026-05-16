@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MB Warband — Генератор отчётов</title>
+    <link rel="icon" href="/favicon.jpg" />
     <style>
       *,
       *::before,
@@ -632,7 +633,11 @@
           setProgress(100, "Готово!");
 
           // Показываем сырой JSON для отладки
-          document.getElementById("ocr-raw").textContent = JSON.stringify(result, null, 2);
+          document.getElementById("ocr-raw").textContent = JSON.stringify(
+            result,
+            null,
+            2,
+          );
           document.getElementById("ocr-raw-wrap").style.display = "block";
 
           applyGeminiResult(result);
@@ -689,7 +694,7 @@
 
         // Если задан клан — фильтруем только своих
         let ourPlayers = all.filter(
-          (n) => clanKey && n.toLowerCase().includes(clanKey)
+          (n) => clanKey && n.toLowerCase().includes(clanKey),
         );
 
         // Fallback: если клан не задан или никого не нашли — берём всех
