@@ -6,7 +6,7 @@
     <title>MB Warband — Report Generator</title>
     <link rel="icon" href="./favicon.jpg" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -18,24 +18,26 @@
         padding: 0;
       }
       :root {
-        --bg-color: #0b0c10;
-        --card-bg: rgba(31, 40, 51, 0.6);
-        --card-border: rgba(197, 198, 199, 0.1);
-        --text-main: #c5c6c7;
-        --text-muted: #8b929a;
-        --accent: #66fcf1;
-        --accent-hover: #45a29e;
-        --accent-glow: rgba(102, 252, 241, 0.3);
-        --danger: #ff6b6b;
-        --success: #4ecdc4;
-        --radius: 12px;
-        --radius-lg: 16px;
+        /* Warband Style Colors */
+        --bg-color: #110b07;
+        --card-bg: rgba(44, 30, 22, 0.9);
+        --card-border: #8b5a2b;
+        --text-main: #e8d5b5;
+        --text-muted: #b89f7d;
+        --accent: #d4af37; /* Calradia Gold */
+        --accent-hover: #f2d16b;
+        --accent-glow: rgba(212, 175, 55, 0.3);
+        --danger: #b32d2d; /* Swadian/Blood Red */
+        --success: #4a8c4a;
+        --radius: 4px;
+        --radius-lg: 6px;
         --transition: 0.2s ease;
+        --font-medieval: "Cinzel", "Georgia", serif;
       }
       body {
         background: radial-gradient(
           circle at top center,
-          #1f2833 0%,
+          #2c1e14 0%,
           var(--bg-color) 100%
         );
         color: var(--text-main);
@@ -56,29 +58,29 @@
         top: 0;
         right: 0;
         display: flex;
-        gap: 8px;
-        background: rgba(0, 0, 0, 0.2);
-        padding: 6px;
-        border-radius: 20px;
+        gap: 6px;
+        background: rgba(15, 10, 5, 0.8);
+        padding: 4px;
+        border-radius: 4px;
         border: 1px solid var(--card-border);
-        backdrop-filter: blur(10px);
       }
       .lang-btn {
         background: transparent;
-        border: none;
+        border: 1px solid transparent;
         color: var(--text-muted);
         font-size: 12px;
         font-weight: 600;
         cursor: pointer;
         padding: 4px 10px;
-        border-radius: 14px;
+        border-radius: 2px;
         transition: var(--transition);
         text-transform: uppercase;
       }
       .lang-btn.active {
-        background: var(--accent);
-        color: #000;
-        box-shadow: 0 0 10px var(--accent-glow);
+        background: var(--danger);
+        color: var(--text-main);
+        border-color: #8a1c1c;
+        box-shadow: 0 0 8px rgba(179, 45, 45, 0.5);
       }
 
       header {
@@ -87,40 +89,54 @@
         padding-top: 1rem;
       }
       header h1 {
-        font-size: 28px;
+        font-family: var(--font-medieval);
+        font-size: 32px;
         font-weight: 700;
-        color: #fff;
-        text-shadow: 0 0 20px var(--accent-glow);
+        color: var(--accent);
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
         margin-bottom: 8px;
+        letter-spacing: 1px;
       }
       header p {
         font-size: 14px;
         color: var(--text-muted);
+        font-style: italic;
       }
 
       .card {
         background: var(--card-bg);
-        border: 1px solid var(--card-border);
+        border: 2px solid var(--card-border);
         border-radius: var(--radius-lg);
         padding: 1.5rem;
         margin-bottom: 1.5rem;
-        backdrop-filter: blur(12px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        transition: transform var(--transition);
+        box-shadow:
+          inset 0 0 30px rgba(0, 0, 0, 0.8),
+          0 8px 20px rgba(0, 0, 0, 0.6);
+        position: relative;
       }
-      .card:hover {
-        border-color: rgba(102, 252, 241, 0.15);
+      .card::before {
+        /* Decorative corner studs */
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        right: 4px;
+        bottom: 4px;
+        border: 1px solid rgba(139, 90, 43, 0.3);
+        pointer-events: none;
       }
       .card-label {
-        font-size: 12px;
+        font-family: var(--font-medieval);
+        font-size: 15px;
         color: var(--accent);
-        font-weight: 600;
+        font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 1px;
         margin-bottom: 16px;
         display: flex;
         align-items: center;
         gap: 8px;
+        text-shadow: 1px 1px 2px #000;
       }
 
       .grid-2 {
@@ -132,55 +148,60 @@
         font-size: 13px;
         color: var(--text-muted);
         display: block;
-        margin-bottom: 8px;
-        font-weight: 500;
+        margin-bottom: 6px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
       input[type="text"],
       input[type="date"],
       input[type="number"] {
         width: 100%;
-        background: rgba(11, 12, 16, 0.5);
-        border: 1px solid var(--card-border);
+        background: rgba(15, 10, 5, 0.9);
+        border: 1px solid #5a3d24;
         border-radius: var(--radius);
-        color: #fff;
+        color: var(--text-main);
         font-size: 14px;
         padding: 10px 14px;
         outline: none;
         transition: var(--transition);
         font-family: inherit;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
       }
       input:focus {
         border-color: var(--accent);
-        box-shadow: 0 0 0 3px var(--accent-glow);
+        box-shadow:
+          inset 0 2px 4px rgba(0, 0, 0, 0.5),
+          0 0 5px var(--accent-glow);
       }
       input[type="date"]::-webkit-calendar-picker-indicator {
-        filter: invert(1) opacity(0.6);
+        filter: sepia(1) hue-rotate(5deg) saturate(3) opacity(0.8);
         cursor: pointer;
       }
 
       /* Drop zone */
       #drop-zone {
-        border: 2px dashed var(--text-muted);
+        border: 2px dashed #5a3d24;
         border-radius: var(--radius);
         padding: 2.5rem 1rem;
         text-align: center;
         cursor: pointer;
         transition: var(--transition);
-        background: rgba(0, 0, 0, 0.1);
+        background: rgba(15, 10, 5, 0.4);
       }
       #drop-zone:hover,
       #drop-zone.drag-over {
         border-color: var(--accent);
-        background: var(--accent-glow);
+        background: rgba(212, 175, 55, 0.1);
       }
       #drop-zone .icon {
         font-size: 40px;
         margin-bottom: 12px;
-        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
       }
       #drop-zone p {
         font-size: 15px;
-        color: #fff;
+        color: var(--text-main);
         font-weight: 500;
       }
       #drop-zone span {
@@ -208,6 +229,7 @@
         border: 1px solid var(--card-border);
         aspect-ratio: 16/10;
         background: #000;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
       }
       .preview-thumb img {
         width: 100%;
@@ -225,9 +247,9 @@
         right: 6px;
         width: 24px;
         height: 24px;
-        border-radius: 50%;
+        border-radius: 2px;
         background: var(--danger);
-        border: none;
+        border: 1px solid #590f0f;
         color: #fff;
         font-size: 16px;
         cursor: pointer;
@@ -237,6 +259,7 @@
         opacity: 0;
         transform: scale(0.8);
         transition: var(--transition);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
       }
       .preview-thumb:hover .thumb-remove {
         opacity: 1;
@@ -244,10 +267,10 @@
       }
 
       .add-more-btn {
-        border: 2px dashed var(--card-border);
+        border: 2px dashed #5a3d24;
         border-radius: var(--radius);
         aspect-ratio: 16/10;
-        background: rgba(0, 0, 0, 0.1);
+        background: rgba(15, 10, 5, 0.4);
         color: var(--text-muted);
         font-size: 28px;
         cursor: pointer;
@@ -260,37 +283,41 @@
       .add-more-btn:hover {
         border-color: var(--accent);
         color: var(--accent);
-        background: var(--accent-glow);
+        background: rgba(212, 175, 55, 0.1);
       }
 
       /* Buttons */
       .btn-primary {
         width: 100%;
         padding: 12px;
-        font-size: 15px;
-        font-weight: 600;
+        font-family: var(--font-medieval);
+        font-size: 16px;
+        font-weight: 700;
         cursor: pointer;
-        border: none;
+        border: 1px solid var(--accent);
         border-radius: var(--radius);
-        background: linear-gradient(
-          135deg,
-          var(--accent) 0%,
-          var(--accent-hover) 100%
-        );
-        color: #000;
+        background: linear-gradient(to bottom, #8a1c1c, #4a0d0d);
+        color: var(--text-main);
         transition: var(--transition);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        box-shadow: 0 4px 15px var(--accent-glow);
+        letter-spacing: 1px;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.2),
+          0 4px 6px rgba(0, 0, 0, 0.6);
+        text-shadow: 1px 1px 2px #000;
       }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 252, 241, 0.4);
+      .btn-primary:hover:not(:disabled) {
+        background: linear-gradient(to bottom, #a32222, #5c1010);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.2),
+          0 0 10px var(--danger);
+        color: var(--accent);
       }
       .btn-primary:disabled {
-        opacity: 0.5;
+        background: linear-gradient(to bottom, #3a2e28, #1a1411);
+        border-color: #5a3d24;
+        color: #7a6352;
         cursor: not-allowed;
-        transform: none;
         box-shadow: none;
       }
 
@@ -300,25 +327,27 @@
         margin-top: 16px;
       }
       #progress-bar-bg {
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 99px;
-        height: 8px;
+        background: rgba(15, 10, 5, 0.8);
+        border-radius: 2px;
+        height: 10px;
         overflow: hidden;
-        border: 1px solid var(--card-border);
+        border: 1px solid #5a3d24;
       }
       #progress-bar {
         height: 100%;
-        background: var(--accent);
-        border-radius: 99px;
+        background: linear-gradient(90deg, #8a1c1c, var(--danger));
+        border-radius: 2px;
         width: 0%;
         transition: width 0.3s ease;
-        box-shadow: 0 0 10px var(--accent);
+        box-shadow: 0 0 10px var(--danger);
       }
       #progress-text {
+        font-family: var(--font-medieval);
         font-size: 13px;
         color: var(--text-muted);
         margin-top: 8px;
         text-align: center;
+        letter-spacing: 1px;
       }
 
       /* Score */
@@ -328,35 +357,43 @@
         justify-content: center;
         gap: 24px;
         padding: 1.5rem;
-        background: rgba(0, 0, 0, 0.2);
+        background: rgba(15, 10, 5, 0.6);
         border-radius: var(--radius);
-        border: 1px solid var(--card-border);
+        border: 1px solid #5a3d24;
+        box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.8);
       }
       .score-team {
         text-align: center;
+        flex: 1;
       }
       .score-team-name {
-        font-size: 14px;
-        font-weight: 600;
-        color: #fff;
-        margin-bottom: 8px;
+        font-family: var(--font-medieval);
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 12px;
         letter-spacing: 1px;
+        text-shadow: 1px 1px 2px #000;
       }
       .score-sep {
-        font-size: 28px;
+        font-family: var(--font-medieval);
+        font-size: 32px;
         font-weight: 700;
-        color: var(--text-muted);
+        color: #5a3d24;
+        text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
       }
       .score-inp {
         width: 80px !important;
         text-align: center !important;
-        font-size: 32px !important;
+        font-family: var(--font-medieval) !important;
+        font-size: 36px !important;
         font-weight: 700 !important;
-        color: var(--accent) !important;
-        background: rgba(0, 0, 0, 0.4) !important;
+        color: var(--text-main) !important;
+        background: rgba(0, 0, 0, 0.6) !important;
         padding: 8px !important;
-        border-color: var(--accent) !important;
-        border-radius: 8px !important;
+        border-color: #5a3d24 !important;
+        border-radius: 4px !important;
+        text-shadow: 2px 2px 4px #000;
       }
 
       /* Players */
@@ -365,48 +402,54 @@
         grid-template-columns: 1fr auto;
         gap: 12px;
         align-items: center;
-        padding: 8px 12px;
-        background: rgba(0, 0, 0, 0.2);
+        padding: 6px 12px;
+        background: rgba(15, 10, 5, 0.5);
         border-radius: var(--radius);
-        margin-bottom: 8px;
+        margin-bottom: 6px;
         border: 1px solid transparent;
         transition: var(--transition);
       }
       .player-row:hover {
-        border-color: var(--card-border);
-        background: rgba(0, 0, 0, 0.3);
+        border-color: #5a3d24;
+        background: rgba(36, 24, 16, 0.8);
       }
       .player-row input {
         background: transparent;
         border: none;
-        color: #fff;
+        color: var(--text-main);
         font-size: 15px;
         padding: 4px;
         outline: none;
+        box-shadow: none;
+      }
+      .player-row input:focus {
+        box-shadow: none;
       }
       .btn-remove {
         background: none;
         border: none;
         color: var(--danger);
         cursor: pointer;
-        font-size: 20px;
+        font-size: 24px;
         opacity: 0.6;
         transition: var(--transition);
+        line-height: 1;
       }
       .btn-remove:hover {
         opacity: 1;
-        transform: scale(1.1);
+        transform: scale(1.2);
+        color: #ff4d4d;
       }
 
       .btn-add {
         width: 100%;
-        background: rgba(0, 0, 0, 0.1);
-        border: 1px dashed var(--text-muted);
+        background: rgba(15, 10, 5, 0.4);
+        border: 1px dashed #5a3d24;
         color: var(--text-muted);
         border-radius: var(--radius);
         padding: 10px;
         font-size: 14px;
-        font-weight: 500;
+        font-weight: 600;
         cursor: pointer;
         margin-top: 8px;
         transition: var(--transition);
@@ -414,22 +457,23 @@
       .btn-add:hover {
         border-color: var(--accent);
         color: var(--accent);
-        background: var(--accent-glow);
+        background: rgba(212, 175, 55, 0.1);
       }
 
       /* Report */
       .report-box {
-        background: rgba(0, 0, 0, 0.4);
-        border: 1px solid var(--card-border);
+        background: rgba(10, 6, 3, 0.8);
+        border: 1px solid #5a3d24;
         border-radius: var(--radius);
         padding: 1.5rem;
         margin-top: 12px;
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9);
       }
       #report-text {
-        font-family: "JetBrains Mono", "Courier New", monospace;
+        font-family: "Inter", "Courier New", monospace;
         font-size: 14px;
-        line-height: 1.8;
-        color: #fff;
+        line-height: 1.6;
+        color: var(--text-main);
         white-space: pre-wrap;
         min-height: 120px;
       }
@@ -441,19 +485,21 @@
 
       .btn-reset {
         padding: 12px 20px;
+        font-family: var(--font-medieval);
         font-size: 14px;
-        font-weight: 600;
+        font-weight: 700;
         border-radius: var(--radius);
         cursor: pointer;
-        background: transparent;
+        background: rgba(15, 10, 5, 0.8);
         color: var(--text-muted);
-        border: 1px solid var(--text-muted);
+        border: 1px solid #5a3d24;
         transition: var(--transition);
+        text-transform: uppercase;
       }
       .btn-reset:hover {
         border-color: var(--danger);
         color: var(--danger);
-        background: rgba(255, 107, 107, 0.1);
+        background: rgba(179, 45, 45, 0.1);
       }
 
       .hint {
@@ -461,24 +507,26 @@
         color: var(--text-muted);
         margin-top: 12px;
         line-height: 1.5;
+        font-style: italic;
       }
       .badge {
         display: inline-block;
         font-size: 11px;
         padding: 3px 10px;
-        border-radius: 99px;
+        border-radius: 2px;
         margin-left: 8px;
-        font-weight: 600;
+        font-weight: 700;
+        text-transform: uppercase;
       }
       .badge-ok {
-        background: rgba(78, 205, 196, 0.15);
+        background: rgba(74, 140, 74, 0.2);
         color: var(--success);
         border: 1px solid var(--success);
       }
       .badge-warn {
-        background: rgba(255, 204, 92, 0.15);
-        color: #ffcc5c;
-        border: 1px solid #ffcc5c;
+        background: rgba(212, 175, 55, 0.15);
+        color: var(--accent);
+        border: 1px solid var(--accent);
       }
 
       /* OCR result raw */
@@ -490,8 +538,8 @@
         font-family: monospace;
         font-size: 11px;
         color: var(--text-muted);
-        background: rgba(0, 0, 0, 0.5);
-        border: 1px solid var(--card-border);
+        background: rgba(10, 6, 3, 0.8);
+        border: 1px solid #5a3d24;
         border-radius: var(--radius);
         padding: 12px;
         max-height: 100px;
@@ -502,7 +550,6 @@
   </head>
   <body>
     <div class="container">
-      <!-- Переключатель языков -->
       <div class="lang-switcher">
         <button class="lang-btn active" onclick="setLang('ru')">RU</button>
         <button class="lang-btn" onclick="setLang('en')">EN</button>
@@ -510,16 +557,15 @@
       </div>
 
       <header>
-        <h1 data-i18n="title">⚔️ MB Warband — Отчёт</h1>
+        <h1 data-i18n="title">📜 MB Warband — Отчёт</h1>
         <p data-i18n="subtitle">
-          Загрузи скриншот — OCR сам распознает игроков и счёт
+          Загрузи свиток (скриншот) — писец сам распознает воинов и счёт
         </p>
       </header>
 
-      <!-- Скриншот + Gemini -->
       <div class="card">
         <div class="card-label" data-i18n="card_screenshots">
-          📷 Скриншоты таблицы результатов
+          ⚔️ Скриншоты таблицы результатов
         </div>
         <div
           id="drop-zone"
@@ -531,7 +577,7 @@
           ondragleave="this.classList.remove('drag-over')"
           ondrop="handleDrop(event)"
         >
-          <div class="icon">📸</div>
+          <div class="icon">📜</div>
           <p data-i18n="drop_zone_title">
             Перетащи скриншоты или нажми для выбора
           </p>
@@ -556,7 +602,7 @@
             onclick="runAnalyze()"
             data-i18n="btn_scan"
           >
-            🔍 Распознать через Gemini
+            🔍 Изучить записи (OCR)
           </button>
           <div id="progress-wrap">
             <div id="progress-bar-bg"><div id="progress-bar"></div></div>
@@ -571,19 +617,18 @@
               "
               data-i18n="ocr_response"
             >
-              Ответ Gemini (JSON):
+              Ответ провидца (JSON):
             </p>
             <div id="ocr-raw"></div>
           </div>
         </div>
       </div>
 
-      <!-- Параметры -->
       <div class="card">
-        <div class="card-label" data-i18n="card_params">⚙️ Параметры боя</div>
+        <div class="card-label" data-i18n="card_params">⚙️ Параметры битвы</div>
         <div class="grid-2" style="margin-bottom: 16px">
           <div>
-            <label data-i18n="label_date">Дата</label>
+            <label data-i18n="label_date">Дата сражения</label>
             <input type="date" id="battle-date" onchange="refreshReport()" />
           </div>
           <div>
@@ -592,41 +637,40 @@
               type="text"
               id="event-type"
               data-i18n-ph="ph_event"
-              placeholder="Поход, Война, ЛБ..."
+              placeholder="Осада, Полевая битва..."
               oninput="refreshReport()"
             />
           </div>
         </div>
         <div class="grid-2">
           <div>
-            <label data-i18n="label_our_clan">Наш клан</label>
+            <label data-i18n="label_our_clan">Наша фракция</label>
             <input
               type="text"
               id="clan-us"
-              placeholder="[MD]"
-              value="[MD]"
+              placeholder="Наш Клан"
+              value=""
               oninput="onClanChange()"
             />
           </div>
           <div>
-            <label data-i18n="label_enemy_clan">Противник</label>
+            <label data-i18n="label_enemy_clan">Вражеская фракция</label>
             <input
               type="text"
               id="clan-enemy"
               data-i18n-ph="ph_enemy"
-              placeholder="Legion_SvD"
+              placeholder="Противник"
               oninput="onEnemyChange()"
             />
           </div>
         </div>
       </div>
 
-      <!-- Счёт -->
       <div class="card">
-        <div class="card-label" data-i18n="card_score">🏆 Счёт</div>
+        <div class="card-label" data-i18n="card_score">🏆 Исход битвы</div>
         <div class="score-row">
           <div class="score-team">
-            <div id="lbl-us" class="score-team-name">[MD]</div>
+            <div id="lbl-us" class="score-team-name">Мы</div>
             <input
               type="number"
               class="score-inp"
@@ -644,7 +688,7 @@
               class="score-team-name"
               data-i18n="default_enemy"
             >
-              Враг
+              Враги
             </div>
             <input
               type="number"
@@ -659,10 +703,9 @@
         </div>
       </div>
 
-      <!-- Участники -->
       <div class="card">
         <div class="card-label">
-          <span data-i18n="card_players">🛡️ Участники нашего клана</span>
+          <span data-i18n="card_players">🛡️ Воины нашего отряда</span>
           <span
             id="players-badge"
             class="badge badge-warn"
@@ -675,17 +718,18 @@
           onclick="addPlayer('')"
           data-i18n="btn_add_player"
         >
-          + Добавить вручную
+          + Добавить рекрута вручную
         </button>
         <p class="hint" data-i18n="hint_players">
-          После сканирования проверь список — OCR может ошибаться. Enter
+          После изучения свитков проверь список — писец может ошибаться. Enter
           добавляет новую строку.
         </p>
       </div>
 
-      <!-- Отчёт -->
       <div class="card">
-        <div class="card-label" data-i18n="card_report">📝 Готовый отчёт</div>
+        <div class="card-label" data-i18n="card_report">
+          📝 Готовая депеша (Discord)
+        </div>
         <div class="report-box"><pre id="report-text"></pre></div>
         <div class="report-actions">
           <button
@@ -695,7 +739,7 @@
             id="copy-btn"
             data-i18n="btn_copy"
           >
-            📋 Копировать отчёт
+            📋 Скопировать депешу
           </button>
           <button class="btn-reset" onclick="resetAll()" data-i18n="btn_reset">
             Сброс
@@ -708,36 +752,38 @@
       // === I18N DICTIONARIES ===
       const i18n = {
         ru: {
-          title: "⚔️ MB Warband — Отчёт",
-          subtitle: "Загрузи скриншот — OCR сам распознает игроков и счёт",
-          card_screenshots: "📷 Скриншоты таблицы результатов",
+          title: "📜 MB Warband — Отчёт",
+          subtitle:
+            "Загрузи свиток (скриншот) — писец сам распознает воинов и счёт",
+          card_screenshots: "⚔️ Скриншоты таблицы результатов",
           drop_zone_title: "Перетащи скриншоты или нажми для выбора",
           drop_zone_sub: ".png · .jpg · .webp · можно несколько",
-          btn_scan: "🔍 Распознать через Gemini",
-          btn_scan_multi: "🔍 Распознать {n} скриншота",
-          btn_scan_again: "🔄 Распознать снова",
-          btn_scanning: "⏳ Анализирую...",
-          ocr_response: "Ответ Gemini (JSON):",
-          card_params: "⚙️ Параметры боя",
-          label_date: "Дата",
+          btn_scan: "🔍 Изучить записи (OCR)",
+          btn_scan_multi: "🔍 Изучить свитков: {n}",
+          btn_scan_again: "🔄 Изучить заново",
+          btn_scanning: "⏳ Писец работает...",
+          ocr_response: "Ответ провидца (JSON):",
+          card_params: "⚙️ Параметры битвы",
+          label_date: "Дата сражения",
           label_event: "Тип события",
-          ph_event: "Поход, Война, ЛБ...",
-          label_our_clan: "Наш клан",
-          label_enemy_clan: "Противник",
-          ph_enemy: "Legion_SvD",
-          card_score: "🏆 Счёт",
-          default_enemy: "Враг",
-          card_players: "🛡️ Участники нашего клана",
-          btn_add_player: "+ Добавить вручную",
+          ph_event: "Осада, Полевая битва...",
+          label_our_clan: "Наша фракция",
+          label_enemy_clan: "Вражеская фракция",
+          ph_enemy: "Противник",
+          card_score: "🏆 Исход битвы",
+          default_us: "Наш отряд",
+          default_enemy: "Враги",
+          card_players: "🛡️ Воины нашего отряда",
+          btn_add_player: "+ Добавить рекрута вручную",
           hint_players:
-            "После сканирования проверь список — OCR может ошибаться. Enter добавляет новую строку.",
-          card_report: "📝 Готовый отчёт",
-          btn_copy: "📋 Копировать отчёт",
-          btn_copy_success: "✓ Скопировано!",
-          btn_reset: "Сброс",
-          ph_player: "Ник игрока...",
-          badge_not_found: "не найдено",
-          badge_found: "найдено {n}",
+            "После изучения свитков проверь список — писец может ошибаться. Enter добавляет новую строку.",
+          card_report: "📝 Готовая депеша (Discord)",
+          btn_copy: "📋 Скопировать депешу",
+          btn_copy_success: "✓ Скопировано в буфер!",
+          btn_reset: "Очистить всё",
+          ph_player: "Имя воина...",
+          badge_not_found: "никого нет",
+          badge_found: "в строю: {n}",
           days: ["ВС", "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"],
           months: [
             "ЯНВ",
@@ -753,39 +799,45 @@
             "НОЯ",
             "ДЕК",
           ],
-          default_event: "Поход",
+          default_event: "Битва",
+          report_date: "📅 **Дата:**",
+          report_event: "⚔️ **Событие:**",
+          report_score: "🏆 **Счёт:**",
+          report_players: "👥 **Участники**",
         },
         en: {
-          title: "⚔️ MB Warband — Report",
-          subtitle: "Upload a screenshot — OCR will detect players and score",
-          card_screenshots: "📷 Scoreboard Screenshots",
+          title: "📜 MB Warband — Report",
+          subtitle:
+            "Upload a scroll (screenshot) — the scribe will detect warriors and score",
+          card_screenshots: "⚔️ Scoreboard Screenshots",
           drop_zone_title: "Drag screenshots here or click to select",
           drop_zone_sub: ".png · .jpg · .webp · multiple allowed",
-          btn_scan: "🔍 Scan via Gemini",
-          btn_scan_multi: "🔍 Scan {n} screenshots",
-          btn_scan_again: "🔄 Scan again",
-          btn_scanning: "⏳ Analyzing...",
-          ocr_response: "Gemini Response (JSON):",
+          btn_scan: "🔍 Read Records (OCR)",
+          btn_scan_multi: "🔍 Read {n} scrolls",
+          btn_scan_again: "🔄 Read again",
+          btn_scanning: "⏳ Scribe is working...",
+          ocr_response: "Seer Response (JSON):",
           card_params: "⚙️ Battle Parameters",
-          label_date: "Date",
+          label_date: "Date of Battle",
           label_event: "Event Type",
-          ph_event: "Campaign, War, LB...",
-          label_our_clan: "Our Clan",
-          label_enemy_clan: "Enemy Clan",
-          ph_enemy: "Legion_SvD",
-          card_score: "🏆 Score",
-          default_enemy: "Enemy",
-          card_players: "🛡️ Our Clan Players",
-          btn_add_player: "+ Add Manually",
+          ph_event: "Siege, Field Battle...",
+          label_our_clan: "Our Faction",
+          label_enemy_clan: "Enemy Faction",
+          ph_enemy: "Enemy Clan",
+          card_score: "🏆 Battle Outcome",
+          default_us: "Our Warband",
+          default_enemy: "Enemies",
+          card_players: "🛡️ Warriors of our band",
+          btn_add_player: "+ Add Recruit Manually",
           hint_players:
-            "Check the list after scanning — OCR might make mistakes. Press Enter to add a new line.",
-          card_report: "📝 Final Report",
-          btn_copy: "📋 Copy Report",
-          btn_copy_success: "✓ Copied!",
-          btn_reset: "Reset",
-          ph_player: "Player name...",
-          badge_not_found: "not found",
-          badge_found: "found {n}",
+            "Check the roster after reading — the scribe might err. Press Enter to add a new line.",
+          card_report: "📝 Final Dispatch (Discord)",
+          btn_copy: "📋 Copy Dispatch",
+          btn_copy_success: "✓ Copied to clipboard!",
+          btn_reset: "Clear All",
+          ph_player: "Warrior's name...",
+          badge_not_found: "no one found",
+          badge_found: "in ranks: {n}",
           days: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
           months: [
             "JAN",
@@ -801,39 +853,45 @@
             "NOV",
             "DEC",
           ],
-          default_event: "Campaign",
+          default_event: "Battle",
+          report_date: "📅 **Date:**",
+          report_event: "⚔️ **Event:**",
+          report_score: "🏆 **Score:**",
+          report_players: "👥 **Warriors**",
         },
         uk: {
-          title: "⚔️ MB Warband — Звіт",
-          subtitle: "Завантаж скріншот — OCR сам розпізнає гравців та рахунок",
-          card_screenshots: "📷 Скріншоти таблиці результатів",
+          title: "📜 MB Warband — Звіт",
+          subtitle:
+            "Завантаж сувій (скріншот) — писар сам розпізнає воїнів та рахунок",
+          card_screenshots: "⚔️ Скріншоти таблиці результатів",
           drop_zone_title: "Перетягни скріншоти або натисни для вибору",
           drop_zone_sub: ".png · .jpg · .webp · можна декілька",
-          btn_scan: "🔍 Розпізнати через Gemini",
-          btn_scan_multi: "🔍 Розпізнати {n} скріншота",
-          btn_scan_again: "🔄 Розпізнати знову",
-          btn_scanning: "⏳ Аналізую...",
-          ocr_response: "Відповідь Gemini (JSON):",
-          card_params: "⚙️ Параметри бою",
-          label_date: "Дата",
+          btn_scan: "🔍 Вивчити записи (OCR)",
+          btn_scan_multi: "🔍 Вивчити сувоїв: {n}",
+          btn_scan_again: "🔄 Вивчити знову",
+          btn_scanning: "⏳ Писар працює...",
+          ocr_response: "Відповідь провидця (JSON):",
+          card_params: "⚙️ Параметри битви",
+          label_date: "Дата битви",
           label_event: "Тип події",
-          ph_event: "Похід, Війна, ЛБ...",
-          label_our_clan: "Наш клан",
-          label_enemy_clan: "Супротивник",
-          ph_enemy: "Legion_SvD",
-          card_score: "🏆 Рахунок",
-          default_enemy: "Ворог",
-          card_players: "🛡️ Учасники нашого клану",
-          btn_add_player: "+ Додати вручну",
+          ph_event: "Облога, Польова битва...",
+          label_our_clan: "Наша фракція",
+          label_enemy_clan: "Ворожа фракція",
+          ph_enemy: "Ворожий клан",
+          card_score: "🏆 Результат битви",
+          default_us: "Наш загін",
+          default_enemy: "Вороги",
+          card_players: "🛡️ Воїни нашого загону",
+          btn_add_player: "+ Додати рекрута вручну",
           hint_players:
-            "Після сканування перевір список — OCR може помилятися. Enter додає новий рядок.",
-          card_report: "📝 Готовий звіт",
-          btn_copy: "📋 Копіювати звіт",
-          btn_copy_success: "✓ Скопійовано!",
-          btn_reset: "Скинути",
-          ph_player: "Нік гравця...",
-          badge_not_found: "не знайдено",
-          badge_found: "знайдено {n}",
+            "Після вивчення сувоїв перевір список — писар може помилятися. Enter додає новий рядок.",
+          card_report: "📝 Готова депеша (Discord)",
+          btn_copy: "📋 Скопіювати депешу",
+          btn_copy_success: "✓ Скопійовано в буфер!",
+          btn_reset: "Очистити все",
+          ph_player: "Ім'я воїна...",
+          badge_not_found: "нікого немає",
+          badge_found: "в строю: {n}",
           days: ["НД", "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"],
           months: [
             "СІЧ",
@@ -849,7 +907,11 @@
             "ЛИС",
             "ГРУ",
           ],
-          default_event: "Похід",
+          default_event: "Битва",
+          report_date: "📅 **Дата:**",
+          report_event: "⚔️ **Подія:**",
+          report_score: "🏆 **Рахунок:**",
+          report_players: "👥 **Воїни**",
         },
       };
 
@@ -877,16 +939,17 @@
         });
 
         // Update dynamic labels
-        onEnemyChange(); // Refresh default enemy text if empty
+        onClanChange();
+        onEnemyChange();
         updateScanButtonText();
-        renderPlayers(); // re-renders placeholders
+        renderPlayers();
         refreshReport();
         updateBadgeText();
       }
 
       function updateScanButtonText() {
         const scanBtn = document.getElementById("scan-btn");
-        if (scanBtn.disabled) return; // Keep "Analyzing"
+        if (scanBtn.disabled) return;
         if (imageFiles.length > 1) {
           scanBtn.textContent = i18n[currentLang].btn_scan_multi.replace(
             "{n}",
@@ -920,12 +983,13 @@
         const d = new Date(s + "T00:00:00");
         const days = i18n[currentLang].days;
         const months = i18n[currentLang].months;
-        return `(${String(d.getDate()).padStart(2, "0")}/${months[d.getMonth()]}/${d.getFullYear()}/${days[d.getDay()]})`;
+        return `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
       }
 
       function onClanChange() {
         document.getElementById("lbl-us").textContent =
-          document.getElementById("clan-us").value || "[MD]";
+          document.getElementById("clan-us").value ||
+          i18n[currentLang].default_us;
         refreshReport();
       }
       function onEnemyChange() {
@@ -1036,7 +1100,7 @@
             })),
           );
 
-          setProgress(35, "Uploading...");
+          setProgress(35, "Отправка гонцов...");
 
           const response = await fetch("/api/analyze", {
             method: "POST",
@@ -1044,12 +1108,12 @@
             body: JSON.stringify({ images }),
           });
 
-          setProgress(80, "Processing...");
+          setProgress(80, "Расшифровка свитков...");
           const result = await response.json();
 
           if (!response.ok) throw new Error(result.error || "Server error");
 
-          setProgress(100, "Done!");
+          setProgress(100, "Готово!");
           document.getElementById("ocr-raw").textContent = JSON.stringify(
             result,
             null,
@@ -1062,7 +1126,7 @@
           btn.textContent = i18n[currentLang].btn_scan_again;
           btn.disabled = false;
         } catch (err) {
-          setProgress(0, "Error: " + err.message);
+          setProgress(0, "Ошибка: " + err.message);
           updateScanButtonText();
           btn.disabled = false;
         }
@@ -1189,23 +1253,35 @@
         return name.replace(/^\[{1,2}[^\]]*\]{1,2}\s*/, "").trim();
       }
 
+      // Обновленная функция для генерации Discord Markdown
       function refreshReport() {
+        const t = i18n[currentLang];
         const clanUs =
-          document.getElementById("clan-us").value.trim() || "[MD]";
+          document.getElementById("clan-us").value.trim() || t.default_us;
         const clanEnemy =
-          document.getElementById("clan-enemy").value.trim() || "Enemy";
+          document.getElementById("clan-enemy").value.trim() || t.default_enemy;
         const eventType =
-          document.getElementById("event-type").value.trim() ||
-          i18n[currentLang].default_event;
+          document.getElementById("event-type").value.trim() || t.default_event;
         const dateVal = document.getElementById("battle-date").value;
         const scoreUs = document.getElementById("score-us").value || "0";
         const scoreEn = document.getElementById("score-enemy").value || "0";
 
-        const dateStr = dateVal ? formatDate(dateVal) : "(--/---/----/--)";
+        const dateStr = dateVal ? formatDate(dateVal) : "(--.--.----)";
         const names = players.map(stripPrefix).filter(Boolean);
 
+        // Оформление списка бойцов для Discord
+        const namesList =
+          names.length > 0 ? names.map((n) => `🔸 ${n}`).join("\n") : "—";
+
         document.getElementById("report-text").textContent =
-          `${dateStr} [LB]\n\n${eventType} ${clanUs} vs ${clanEnemy} ${scoreUs}:${scoreEn}\n\nPlayers\n${names.join("\n")}`;
+          `${t.report_date} ${dateStr}
+${t.report_event} ${eventType}
+
+🛡️ **${clanUs}** 🆚 **${clanEnemy}**
+${t.report_score} **${scoreUs} : ${scoreEn}**
+
+${t.report_players} (${names.length}):
+${namesList}`;
       }
 
       function copyReport() {
@@ -1213,19 +1289,21 @@
           .writeText(document.getElementById("report-text").textContent)
           .then(() => {
             const btn = document.getElementById("copy-btn");
-            const originalText = btn.innerText;
             btn.textContent = i18n[currentLang].btn_copy_success;
-            btn.style.background = "var(--success)";
+            btn.style.background =
+              "linear-gradient(to bottom, #3b733b, #204020)";
+            btn.style.borderColor = "var(--success)";
             setTimeout(() => {
               btn.textContent = i18n[currentLang].btn_copy;
-              btn.style.background = ""; // reset to CSS default
+              btn.style.background = "";
+              btn.style.borderColor = "";
             }, 2000);
           });
       }
 
       function resetAll() {
         players = [];
-        document.getElementById("clan-us").value = "[MD]";
+        document.getElementById("clan-us").value = "";
         document.getElementById("clan-enemy").value = "";
         document.getElementById("event-type").value = "";
         document.getElementById("score-us").value = "0";
