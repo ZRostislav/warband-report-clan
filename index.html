@@ -18,16 +18,15 @@
         padding: 0;
       }
       :root {
-        /* Warband Style Colors */
         --bg-color: #110b07;
         --card-bg: rgba(44, 30, 22, 0.9);
         --card-border: #8b5a2b;
         --text-main: #e8d5b5;
         --text-muted: #b89f7d;
-        --accent: #d4af37; /* Calradia Gold */
+        --accent: #d4af37;
         --accent-hover: #f2d16b;
         --accent-glow: rgba(212, 175, 55, 0.3);
-        --danger: #b32d2d; /* Swadian/Blood Red */
+        --danger: #b32d2d;
         --success: #4a8c4a;
         --radius: 4px;
         --radius-lg: 6px;
@@ -52,7 +51,6 @@
         position: relative;
       }
 
-      /* Language Switcher */
       .lang-switcher {
         position: absolute;
         top: 0;
@@ -115,7 +113,6 @@
         position: relative;
       }
       .card::before {
-        /* Decorative corner studs */
         content: "";
         position: absolute;
         top: 4px;
@@ -142,6 +139,11 @@
       .grid-2 {
         display: grid;
         grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
         gap: 16px;
       }
       label {
@@ -211,7 +213,6 @@
         display: block;
       }
 
-      /* Multi-image preview grid */
       #images-wrap {
         display: none;
         margin-top: 16px;
@@ -265,7 +266,6 @@
         opacity: 1;
         transform: scale(1);
       }
-
       .add-more-btn {
         border: 2px dashed #5a3d24;
         border-radius: var(--radius);
@@ -286,7 +286,6 @@
         background: rgba(212, 175, 55, 0.1);
       }
 
-      /* Buttons */
       .btn-primary {
         width: 100%;
         padding: 12px;
@@ -321,7 +320,6 @@
         box-shadow: none;
       }
 
-      /* Progress */
       #progress-wrap {
         display: none;
         margin-top: 16px;
@@ -350,7 +348,6 @@
         letter-spacing: 1px;
       }
 
-      /* Score */
       .score-row {
         display: flex;
         align-items: center;
@@ -380,7 +377,6 @@
         font-size: 32px;
         font-weight: 700;
         color: #5a3d24;
-        text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
       }
       .score-inp {
         width: 80px !important;
@@ -396,13 +392,12 @@
         text-shadow: 2px 2px 4px #000;
       }
 
-      /* Players */
       .player-row {
         display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 12px;
+        grid-template-columns: auto 1fr auto;
+        gap: 8px;
         align-items: center;
-        padding: 6px 12px;
+        padding: 6px 10px;
         background: rgba(15, 10, 5, 0.5);
         border-radius: var(--radius);
         margin-bottom: 6px;
@@ -421,6 +416,7 @@
         padding: 4px;
         outline: none;
         box-shadow: none;
+        width: 100%;
       }
       .player-row input:focus {
         box-shadow: none;
@@ -439,6 +435,33 @@
         opacity: 1;
         transform: scale(1.2);
         color: #ff4d4d;
+      }
+      /* Commander crown toggle */
+      .cmd-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 17px;
+        opacity: 0.2;
+        transition: var(--transition);
+        line-height: 1;
+        padding: 0;
+        filter: grayscale(1);
+        flex-shrink: 0;
+      }
+      .cmd-btn:hover {
+        opacity: 0.55;
+        filter: grayscale(0.3);
+      }
+      .cmd-btn.is-commander {
+        opacity: 1;
+        filter: grayscale(0);
+        text-shadow: 0 0 8px rgba(212, 175, 55, 0.9);
+      }
+      .player-row.commander-row {
+        border-color: var(--accent) !important;
+        background: rgba(212, 175, 55, 0.08) !important;
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.12);
       }
 
       .btn-add {
@@ -460,13 +483,44 @@
         background: rgba(212, 175, 55, 0.1);
       }
 
-      /* Report */
+      /* === TEMPLATE TABS === */
+      .template-tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .tpl-tab {
+        padding: 7px 14px;
+        font-family: var(--font-medieval);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        border-radius: var(--radius);
+        border: 1px solid #5a3d24;
+        background: rgba(15, 10, 5, 0.6);
+        color: var(--text-muted);
+        transition: var(--transition);
+      }
+      .tpl-tab:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .tpl-tab.active {
+        background: linear-gradient(to bottom, #5a3d24, #3a2518);
+        border-color: var(--accent);
+        color: var(--accent);
+        box-shadow: 0 0 8px var(--accent-glow);
+      }
+
       .report-box {
         background: rgba(10, 6, 3, 0.8);
         border: 1px solid #5a3d24;
         border-radius: var(--radius);
         padding: 1.5rem;
-        margin-top: 12px;
+        margin-top: 0;
         box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9);
       }
       #report-text {
@@ -482,7 +536,6 @@
         gap: 12px;
         margin-top: 16px;
       }
-
       .btn-reset {
         padding: 12px 20px;
         font-family: var(--font-medieval);
@@ -529,7 +582,6 @@
         border: 1px solid var(--accent);
       }
 
-      /* OCR result raw */
       #ocr-raw-wrap {
         display: none;
         margin-top: 16px;
@@ -545,6 +597,212 @@
         max-height: 100px;
         overflow-y: auto;
         white-space: pre-wrap;
+      }
+
+      /* ======= RESPONSIVE ======= */
+
+      /* Tablet */
+      @media (max-width: 600px) {
+        body {
+          padding: 1rem 0.75rem;
+        }
+
+        /* Header: make room for lang switcher */
+        header {
+          padding-top: 3rem;
+          margin-bottom: 1.5rem;
+        }
+        header h1 {
+          font-size: 22px;
+          letter-spacing: 0.5px;
+        }
+        header p {
+          font-size: 12px;
+        }
+
+        /* Lang switcher: top right, smaller */
+        .lang-switcher {
+          position: fixed;
+          top: 10px;
+          right: 10px;
+          z-index: 100;
+          padding: 3px;
+          gap: 3px;
+        }
+        .lang-btn {
+          padding: 5px 8px;
+          font-size: 11px;
+        }
+
+        /* Cards */
+        .card {
+          padding: 1rem 0.875rem;
+          margin-bottom: 1rem;
+        }
+        .card-label {
+          font-size: 13px;
+          margin-bottom: 12px;
+        }
+
+        /* Grids go single column */
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        /* Inputs a bit bigger tap target */
+        input[type="text"],
+        input[type="date"],
+        input[type="number"] {
+          font-size: 16px; /* prevents iOS zoom on focus */
+          padding: 11px 12px;
+        }
+
+        /* Drop zone */
+        #drop-zone {
+          padding: 1.75rem 0.75rem;
+        }
+        #drop-zone .icon {
+          font-size: 32px;
+          margin-bottom: 8px;
+        }
+        #drop-zone p {
+          font-size: 14px;
+        }
+
+        /* Image grid: 2 columns on phone */
+        #images-grid {
+          grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+          gap: 8px;
+        }
+
+        /* Thumb remove button: always visible on mobile (no hover) */
+        .thumb-remove {
+          opacity: 1;
+          transform: scale(1);
+        }
+
+        /* Score block */
+        .score-row {
+          gap: 12px;
+          padding: 1rem 0.75rem;
+        }
+        .score-team-name {
+          font-size: 13px;
+          margin-bottom: 8px;
+          /* Truncate long clan names */
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .score-inp {
+          width: 68px !important;
+          font-size: 30px !important;
+          padding: 6px !important;
+        }
+        .score-sep {
+          font-size: 24px;
+        }
+
+        /* Player rows */
+        .player-row {
+          padding: 5px 8px;
+          gap: 6px;
+        }
+        .player-row input {
+          font-size: 15px;
+          padding: 6px 4px;
+          /* Prevent iOS zoom */
+          font-size: 16px;
+        }
+        .btn-remove {
+          font-size: 26px;
+          /* larger tap target */
+          padding: 4px 2px;
+        }
+        .cmd-btn {
+          font-size: 20px;
+          padding: 4px 2px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+          font-size: 14px;
+          padding: 14px 10px;
+          letter-spacing: 0.5px;
+        }
+        .btn-add {
+          padding: 13px 10px;
+          font-size: 14px;
+        }
+
+        /* Template tabs: scroll horizontally if needed */
+        .template-tabs {
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+          padding-bottom: 4px;
+          gap: 6px;
+        }
+        .template-tabs::-webkit-scrollbar {
+          display: none;
+        }
+        .tpl-tab {
+          white-space: nowrap;
+          flex-shrink: 0;
+          padding: 8px 12px;
+          font-size: 11px;
+        }
+
+        /* Report box */
+        .report-box {
+          padding: 1rem 0.75rem;
+        }
+        #report-text {
+          font-size: 13px;
+          min-height: 80px;
+        }
+
+        /* Report actions: stack copy full width, reset below */
+        .report-actions {
+          flex-direction: column;
+          gap: 8px;
+        }
+        .btn-reset {
+          width: 100%;
+          text-align: center;
+          padding: 12px;
+        }
+
+        /* Hints smaller */
+        .hint {
+          font-size: 11px;
+        }
+
+        /* Badge inline */
+        .badge {
+          font-size: 10px;
+          padding: 2px 7px;
+        }
+      }
+
+      /* Very small phones */
+      @media (max-width: 380px) {
+        header h1 {
+          font-size: 18px;
+        }
+        .card {
+          padding: 0.875rem 0.75rem;
+        }
+        .score-inp {
+          width: 58px !important;
+          font-size: 26px !important;
+        }
+        .score-team-name {
+          font-size: 12px;
+        }
       }
     </style>
   </head>
@@ -563,6 +821,7 @@
         </p>
       </header>
 
+      <!-- Screenshots -->
       <div class="card">
         <div class="card-label" data-i18n="card_screenshots">
           ⚔️ Скриншоты таблицы результатов
@@ -593,7 +852,6 @@
           style="display: none"
           onchange="handleFiles(this.files)"
         />
-
         <div id="images-wrap">
           <div id="images-grid"></div>
           <button
@@ -624,6 +882,7 @@
         </div>
       </div>
 
+      <!-- Battle Params -->
       <div class="card">
         <div class="card-label" data-i18n="card_params">⚙️ Параметры битвы</div>
         <div class="grid-2" style="margin-bottom: 16px">
@@ -642,7 +901,7 @@
             />
           </div>
         </div>
-        <div class="grid-2">
+        <div class="grid-2" style="margin-bottom: 16px">
           <div>
             <label data-i18n="label_our_clan">Наша фракция</label>
             <input
@@ -666,6 +925,7 @@
         </div>
       </div>
 
+      <!-- Score -->
       <div class="card">
         <div class="card-label" data-i18n="card_score">🏆 Исход битвы</div>
         <div class="score-row">
@@ -703,6 +963,7 @@
         </div>
       </div>
 
+      <!-- Players -->
       <div class="card">
         <div class="card-label">
           <span data-i18n="card_players">🛡️ Воины нашего отряда</span>
@@ -722,14 +983,52 @@
         </button>
         <p class="hint" data-i18n="hint_players">
           После изучения свитков проверь список — писец может ошибаться. Enter
-          добавляет новую строку.
+          добавляет новую строку. 👑 — назначить командиром.
         </p>
       </div>
 
+      <!-- Report -->
       <div class="card">
         <div class="card-label" data-i18n="card_report">
           📝 Готовая депеша (Discord)
         </div>
+
+        <!-- Template selector -->
+        <div class="template-tabs" id="tpl-tabs">
+          <button
+            class="tpl-tab active"
+            onclick="setTemplate('standard')"
+            data-tpl="standard"
+            data-i18n="tpl_standard"
+          >
+            Стандартный
+          </button>
+          <button
+            class="tpl-tab"
+            onclick="setTemplate('compact')"
+            data-tpl="compact"
+            data-i18n="tpl_compact"
+          >
+            Компактный
+          </button>
+          <button
+            class="tpl-tab"
+            onclick="setTemplate('detailed')"
+            data-tpl="detailed"
+            data-i18n="tpl_detailed"
+          >
+            Подробный
+          </button>
+          <button
+            class="tpl-tab"
+            onclick="setTemplate('herald')"
+            data-tpl="herald"
+            data-i18n="tpl_herald"
+          >
+            Глашатай
+          </button>
+        </div>
+
         <div class="report-box"><pre id="report-text"></pre></div>
         <div class="report-actions">
           <button
@@ -749,7 +1048,7 @@
     </div>
 
     <script>
-      // === I18N DICTIONARIES ===
+      // === I18N ===
       const i18n = {
         ru: {
           title: "📜 MB Warband — Отчёт",
@@ -770,6 +1069,10 @@
           label_our_clan: "Наша фракция",
           label_enemy_clan: "Вражеская фракция",
           ph_enemy: "Противник",
+          label_commander: "⚔️ Командир / Офицер",
+          ph_commander: "Имя командира...",
+          label_officer2: "Заместитель",
+          ph_officer2: "Имя заместителя...",
           card_score: "🏆 Исход битвы",
           default_us: "Наш отряд",
           default_enemy: "Враги",
@@ -804,6 +1107,15 @@
           report_event: "⚔️ **Событие:**",
           report_score: "🏆 **Счёт:**",
           report_players: "👥 **Участники**",
+          report_commander: "👑 **Командир:**",
+          report_officer2: "🎖️ **Заместитель:**",
+          tpl_standard: "Стандартный",
+          tpl_compact: "Компактный",
+          tpl_detailed: "Подробный",
+          tpl_herald: "Глашатай",
+          win: "ПОБЕДА",
+          loss: "ПОРАЖЕНИЕ",
+          draw: "НИЧЬЯ",
         },
         en: {
           title: "📜 MB Warband — Report",
@@ -824,6 +1136,10 @@
           label_our_clan: "Our Faction",
           label_enemy_clan: "Enemy Faction",
           ph_enemy: "Enemy Clan",
+          label_commander: "⚔️ Commander / Officer",
+          ph_commander: "Commander's name...",
+          label_officer2: "Deputy",
+          ph_officer2: "Deputy's name...",
           card_score: "🏆 Battle Outcome",
           default_us: "Our Warband",
           default_enemy: "Enemies",
@@ -858,6 +1174,15 @@
           report_event: "⚔️ **Event:**",
           report_score: "🏆 **Score:**",
           report_players: "👥 **Warriors**",
+          report_commander: "👑 **Commander:**",
+          report_officer2: "🎖️ **Deputy:**",
+          tpl_standard: "Standard",
+          tpl_compact: "Compact",
+          tpl_detailed: "Detailed",
+          tpl_herald: "Herald",
+          win: "VICTORY",
+          loss: "DEFEAT",
+          draw: "DRAW",
         },
         uk: {
           title: "📜 MB Warband — Звіт",
@@ -878,6 +1203,10 @@
           label_our_clan: "Наша фракція",
           label_enemy_clan: "Ворожа фракція",
           ph_enemy: "Ворожий клан",
+          label_commander: "⚔️ Командир / Офіцер",
+          ph_commander: "Ім'я командира...",
+          label_officer2: "Заступник",
+          ph_officer2: "Ім'я заступника...",
           card_score: "🏆 Результат битви",
           default_us: "Наш загін",
           default_enemy: "Вороги",
@@ -912,33 +1241,38 @@
           report_event: "⚔️ **Подія:**",
           report_score: "🏆 **Рахунок:**",
           report_players: "👥 **Воїни**",
+          report_commander: "👑 **Командир:**",
+          report_officer2: "🎖️ **Заступник:**",
+          tpl_standard: "Стандартний",
+          tpl_compact: "Компактний",
+          tpl_detailed: "Детальний",
+          tpl_herald: "Глашатай",
+          win: "ПЕРЕМОГА",
+          loss: "ПОРАЗКА",
+          draw: "НІЧИЯ",
         },
       };
 
       let currentLang = "ru";
+      let currentTemplate = "standard";
       let players = [];
+      let commanderIdx = -1; // index of the player marked as commander
       let imageFiles = [];
 
-      // === LANGUAGE LOGIC ===
+      // === LANGUAGE ===
       function setLang(lang) {
         currentLang = lang;
         document.querySelectorAll(".lang-btn").forEach((btn) => {
           btn.classList.toggle("active", btn.innerText.toLowerCase() === lang);
         });
-
-        // Update static texts
         document.querySelectorAll("[data-i18n]").forEach((el) => {
           const key = el.getAttribute("data-i18n");
           if (i18n[lang][key]) el.innerText = i18n[lang][key];
         });
-
-        // Update placeholders
         document.querySelectorAll("[data-i18n-ph]").forEach((el) => {
           const key = el.getAttribute("data-i18n-ph");
           if (i18n[lang][key]) el.placeholder = i18n[lang][key];
         });
-
-        // Update dynamic labels
         onClanChange();
         onEnemyChange();
         updateScanButtonText();
@@ -974,15 +1308,243 @@
         }
       }
 
-      // === APP LOGIC ===
+      // === TEMPLATES ===
+      function setTemplate(tpl) {
+        currentTemplate = tpl;
+        document.querySelectorAll(".tpl-tab").forEach((btn) => {
+          btn.classList.toggle("active", btn.getAttribute("data-tpl") === tpl);
+        });
+        refreshReport();
+      }
+
+      function getOutcome(us, enemy) {
+        const t = i18n[currentLang];
+        if (us > enemy) return t.win;
+        if (us < enemy) return t.loss;
+        return t.draw;
+      }
+
+      function buildReport() {
+        const t = i18n[currentLang];
+        const clanUs =
+          document.getElementById("clan-us").value.trim() || t.default_us;
+        const clanEnemy =
+          document.getElementById("clan-enemy").value.trim() || t.default_enemy;
+        const eventType =
+          document.getElementById("event-type").value.trim() || t.default_event;
+        const dateVal = document.getElementById("battle-date").value;
+        const scoreUs =
+          parseInt(document.getElementById("score-us").value) || 0;
+        const scoreEn =
+          parseInt(document.getElementById("score-enemy").value) || 0;
+        const dateStr = dateVal ? formatDate(dateVal) : "(--.--.----)";
+        const names = players.map(stripPrefix).filter(Boolean);
+        const commander =
+          commanderIdx >= 0 && players[commanderIdx]
+            ? stripPrefix(players[commanderIdx])
+            : "";
+        const outcome = getOutcome(scoreUs, scoreEn);
+
+        switch (currentTemplate) {
+          case "standard":
+            return buildStandard({
+              t,
+              clanUs,
+              clanEnemy,
+              eventType,
+              dateStr,
+              scoreUs,
+              scoreEn,
+              commander,
+              names,
+            });
+          case "compact":
+            return buildCompact({
+              t,
+              clanUs,
+              clanEnemy,
+              eventType,
+              dateStr,
+              scoreUs,
+              scoreEn,
+              commander,
+              names,
+            });
+          case "detailed":
+            return buildDetailed({
+              t,
+              clanUs,
+              clanEnemy,
+              eventType,
+              dateStr,
+              scoreUs,
+              scoreEn,
+              commander,
+              names,
+              outcome,
+            });
+          case "herald":
+            return buildHerald({
+              t,
+              clanUs,
+              clanEnemy,
+              eventType,
+              dateStr,
+              scoreUs,
+              scoreEn,
+              commander,
+              names,
+              outcome,
+            });
+          default:
+            return "";
+        }
+      }
+
+      function buildStandard({
+        t,
+        clanUs,
+        clanEnemy,
+        eventType,
+        dateStr,
+        scoreUs,
+        scoreEn,
+        commander,
+        names,
+      }) {
+        const namesList =
+          names.length > 0 ? names.map((n) => `🔸 ${n}`).join("\n") : "—";
+        let lines = [];
+        lines.push(`${t.report_date} ${dateStr}`);
+        lines.push(`${t.report_event} ${eventType}`);
+        lines.push("");
+        lines.push(`🛡️ **${clanUs}** 🆚 **${clanEnemy}**`);
+        lines.push(`${t.report_score} **${scoreUs} : ${scoreEn}**`);
+        if (commander) lines.push(`${t.report_commander} ${commander}`);
+        lines.push("");
+        lines.push(`${t.report_players} (${names.length}):`);
+        lines.push(namesList);
+        return lines.join("\n");
+      }
+
+      function buildCompact({
+        t,
+        clanUs,
+        clanEnemy,
+        eventType,
+        dateStr,
+        scoreUs,
+        scoreEn,
+        commander,
+        names,
+      }) {
+        const namesList = names.length > 0 ? names.join(", ") : "—";
+        let lines = [];
+        lines.push(
+          `**[${dateStr}] ${eventType} | ${clanUs} ${scoreUs}:${scoreEn} ${clanEnemy}**`,
+        );
+        if (commander) lines.push(`👑 ${commander}`);
+        lines.push(`👥 (${names.length}): ${namesList}`);
+        return lines.join("\n");
+      }
+
+      function buildDetailed({
+        t,
+        clanUs,
+        clanEnemy,
+        eventType,
+        dateStr,
+        scoreUs,
+        scoreEn,
+        commander,
+        names,
+        outcome,
+      }) {
+        const namesList =
+          names.length > 0
+            ? names
+                .map((n, i) => `${String(i + 1).padStart(2, "0")}. ${n}`)
+                .join("\n")
+            : "—";
+        let lines = [];
+        lines.push(`═══════════════════════════`);
+        lines.push(`⚔️  **БОЕВОЙ ОТЧЁТ**`);
+        lines.push(`═══════════════════════════`);
+        lines.push(`${t.report_date} ${dateStr}`);
+        lines.push(`${t.report_event} **${eventType}**`);
+        lines.push(`───────────────────────────`);
+        lines.push(`🏰 **${clanUs}** vs **${clanEnemy}**`);
+        lines.push(
+          `${t.report_score} \`${scoreUs} : ${scoreEn}\` — **${outcome}**`,
+        );
+        lines.push(`───────────────────────────`);
+        if (commander) {
+          lines.push(`${t.report_commander} **${commander}**`);
+          lines.push(`───────────────────────────`);
+        }
+        lines.push(`${t.report_players} (${names.length}):`);
+        lines.push("```");
+        lines.push(namesList);
+        lines.push("```");
+        lines.push(`═══════════════════════════`);
+        return lines.join("\n");
+      }
+
+      function buildHerald({
+        t,
+        clanUs,
+        clanEnemy,
+        eventType,
+        dateStr,
+        scoreUs,
+        scoreEn,
+        commander,
+        names,
+        outcome,
+      }) {
+        const namesList =
+          names.length > 0 ? names.map((n) => `  ⚔ ${n}`).join("\n") : "  —";
+        const outcomeEmoji =
+          scoreUs > scoreEn ? "🏆" : scoreUs < scoreEn ? "💀" : "⚖️";
+        let intro =
+          currentLang === "en"
+            ? `*Hear ye, hear ye! By order of the commanders of* **${clanUs}***,\nlet it be known across the lands of Calradia:*`
+            : currentLang === "uk"
+              ? `*Чуйте, чуйте! За велінням командирів* **${clanUs}***,\nхай стане відомим у всіх землях Калрадії:*`
+              : `*Слушайте, слушайте! По велению командиров* **${clanUs}***,\nда станет известно во всех землях Калрадии:*`;
+        let lines = [];
+        lines.push(intro);
+        lines.push("");
+        lines.push(`${outcomeEmoji} **${outcome}** ${outcomeEmoji}`);
+        lines.push(
+          `> **${clanUs}** \`${scoreUs} : ${scoreEn}\` **${clanEnemy}**`,
+        );
+        lines.push(`> 📍 *${eventType}* · 📅 *${dateStr}*`);
+        lines.push("");
+        if (commander) {
+          lines.push(
+            `👑 **${currentLang === "en" ? "Commander" : currentLang === "uk" ? "Командир" : "Командовал"}:** ${commander}`,
+          );
+          lines.push("");
+        }
+        lines.push(
+          `*${currentLang === "en" ? "Warriors who answered the call" : currentLang === "uk" ? "Воїни, що відгукнулись на поклик" : "Воины, откликнувшиеся на призыв"} (${names.length}):*`,
+        );
+        lines.push(namesList);
+        lines.push("");
+        lines.push(
+          `*${currentLang === "en" ? "Glory to all who fought!" : currentLang === "uk" ? "Слава всім, хто бився!" : "Слава всем, кто сражался!"}* 🗡️`,
+        );
+        return lines.join("\n");
+      }
+
+      // === CORE ===
       document.getElementById("battle-date").value = new Date()
         .toISOString()
         .split("T")[0];
 
       function formatDate(s) {
         const d = new Date(s + "T00:00:00");
-        const days = i18n[currentLang].days;
-        const months = i18n[currentLang].months;
         return `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
       }
 
@@ -1034,16 +1596,13 @@
         const wrap = document.getElementById("images-wrap");
         const dropZone = document.getElementById("drop-zone");
         grid.innerHTML = "";
-
         if (imageFiles.length === 0) {
           wrap.style.display = "none";
           dropZone.style.display = "block";
           return;
         }
-
         dropZone.style.display = "none";
         wrap.style.display = "block";
-
         imageFiles.forEach((file, i) => {
           const thumb = document.createElement("div");
           thumb.className = "preview-thumb";
@@ -1058,13 +1617,11 @@
           thumb.appendChild(btn);
           grid.appendChild(thumb);
         });
-
         const addBtn = document.createElement("button");
         addBtn.className = "add-more-btn";
         addBtn.textContent = "+";
         addBtn.onclick = () => document.getElementById("file-input").click();
         grid.appendChild(addBtn);
-
         updateScanButtonText();
       }
 
@@ -1075,7 +1632,6 @@
         document.getElementById("ocr-raw-wrap").style.display = "none";
       }
 
-      // === API SIMULATION / FETCH ===
       async function runAnalyze() {
         if (imageFiles.length === 0) return;
         const btn = document.getElementById("scan-btn");
@@ -1086,12 +1642,11 @@
         setProgress(
           10,
           currentLang === "ru"
-            ? `Подготовка...`
+            ? "Подготовка..."
             : currentLang === "en"
-              ? `Preparing...`
-              : `Підготовка...`,
+              ? "Preparing..."
+              : "Підготовка...",
         );
-
         try {
           const images = await Promise.all(
             imageFiles.map(async (file) => ({
@@ -1099,20 +1654,15 @@
               mimeType: file.type || "image/png",
             })),
           );
-
           setProgress(35, "Отправка гонцов...");
-
           const response = await fetch("/api/analyze", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ images }),
           });
-
           setProgress(80, "Расшифровка свитков...");
           const result = await response.json();
-
           if (!response.ok) throw new Error(result.error || "Server error");
-
           setProgress(100, "Готово!");
           document.getElementById("ocr-raw").textContent = JSON.stringify(
             result,
@@ -1120,9 +1670,7 @@
             2,
           );
           document.getElementById("ocr-raw-wrap").style.display = "block";
-
           applyGeminiResult(result);
-
           btn.textContent = i18n[currentLang].btn_scan_again;
           btn.disabled = false;
         } catch (err) {
@@ -1149,7 +1697,6 @@
       function applyGeminiResult(data) {
         const clanUs = document.getElementById("clan-us").value.trim();
         const clanKey = clanUs.toLowerCase().replace(/[\[\]]/g, "");
-
         if (data.score) {
           if (data.score.team1 != null)
             document.getElementById("score-us").value = data.score.team1;
@@ -1157,11 +1704,9 @@
             document.getElementById("score-enemy").value = data.score.team2;
           refreshReport();
         }
-
         const team1 = data.players?.team1 ?? [];
         const team2 = data.players?.team2 ?? [];
         const all = [...team1, ...team2];
-
         const badge = document.getElementById("players-badge");
         if (all.length === 0) {
           badge.textContent = i18n[currentLang].badge_not_found;
@@ -1169,16 +1714,14 @@
           badge.style.display = "inline-block";
           return;
         }
-
         let ourPlayers = all.filter(
           (n) => clanKey && n.toLowerCase().includes(clanKey),
         );
         const result = ourPlayers.length > 0 ? ourPlayers : all;
-
         players = result;
+        commanderIdx = -1;
         renderPlayers();
         refreshReport();
-
         badge.textContent = i18n[currentLang].badge_found.replace(
           "{n}",
           result.length,
@@ -1192,16 +1735,16 @@
         const list = document.getElementById("players-list");
         list.innerHTML = "";
         const placeholderText = i18n[currentLang].ph_player;
-
         players.forEach((name, i) => {
+          const isCmd = i === commanderIdx;
           const row = document.createElement("div");
-          row.className = "player-row";
+          row.className = "player-row" + (isCmd ? " commander-row" : "");
           row.innerHTML = `
+            <button class="cmd-btn${isCmd ? " is-commander" : ""}" title="Командир" onclick="toggleCommander(${i})">👑</button>
             <input type="text" value="${escHtml(name)}" placeholder="${placeholderText}"
               oninput="players[${i}]=this.value; refreshReport()"
               onkeydown="handleKey(event,${i})">
-            <button class="btn-remove" onclick="removePlayer(${i})">×</button>
-          `;
+            <button class="btn-remove" onclick="removePlayer(${i})">×</button>`;
           list.appendChild(row);
         });
       }
@@ -1243,7 +1786,15 @@
         }, 0);
       }
 
+      function toggleCommander(idx) {
+        commanderIdx = commanderIdx === idx ? -1 : idx;
+        renderPlayers();
+        refreshReport();
+      }
+
       function removePlayer(idx) {
+        if (commanderIdx === idx) commanderIdx = -1;
+        else if (commanderIdx > idx) commanderIdx--;
         players.splice(idx, 1);
         renderPlayers();
         refreshReport();
@@ -1253,35 +1804,8 @@
         return name.replace(/^\[{1,2}[^\]]*\]{1,2}\s*/, "").trim();
       }
 
-      // Обновленная функция для генерации Discord Markdown
       function refreshReport() {
-        const t = i18n[currentLang];
-        const clanUs =
-          document.getElementById("clan-us").value.trim() || t.default_us;
-        const clanEnemy =
-          document.getElementById("clan-enemy").value.trim() || t.default_enemy;
-        const eventType =
-          document.getElementById("event-type").value.trim() || t.default_event;
-        const dateVal = document.getElementById("battle-date").value;
-        const scoreUs = document.getElementById("score-us").value || "0";
-        const scoreEn = document.getElementById("score-enemy").value || "0";
-
-        const dateStr = dateVal ? formatDate(dateVal) : "(--.--.----)";
-        const names = players.map(stripPrefix).filter(Boolean);
-
-        // Оформление списка бойцов для Discord
-        const namesList =
-          names.length > 0 ? names.map((n) => `🔸 ${n}`).join("\n") : "—";
-
-        document.getElementById("report-text").textContent =
-          `${t.report_date} ${dateStr}
-${t.report_event} ${eventType}
-
-🛡️ **${clanUs}** 🆚 **${clanEnemy}**
-${t.report_score} **${scoreUs} : ${scoreEn}**
-
-${t.report_players} (${names.length}):
-${namesList}`;
+        document.getElementById("report-text").textContent = buildReport();
       }
 
       function copyReport() {
@@ -1303,6 +1827,7 @@ ${namesList}`;
 
       function resetAll() {
         players = [];
+        commanderIdx = -1;
         document.getElementById("clan-us").value = "";
         document.getElementById("clan-enemy").value = "";
         document.getElementById("event-type").value = "";
