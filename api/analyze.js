@@ -63,6 +63,18 @@ async function callGemini(apiKey, imageParts, attempt = 1) {
     return callGemini(apiKey, imageParts, attempt + 1);
   }
 
+  // 503 / 500 — временная перегрузка серверов Gemini
+  if (response.status === 503 || response.status === 500) {
+    if (attempt >= 4) {
+      throw new Error(
+        "Серверы Gemini перегружены. Попробуй ещё раз через несколько секунд."
+      );
+    }
+    // Экспоненциальная задержка: 3с → 6с → 12с
+    await sleep(3000 * Math.pow(2, attempt - 1));
+    return callGemini(apiKey, imageParts, attempt + 1);
+  }
+
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
     const msg = body?.error?.message ?? (await response.text());
