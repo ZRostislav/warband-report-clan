@@ -38,13 +38,10 @@ async function callGemini(apiKey, imageParts, attempt = 1) {
     body: JSON.stringify({
       contents: [
         {
-          parts: [
-            { text: PROMPT },
-            ...imageParts,
-          ],
+          parts: [{ text: PROMPT }, ...imageParts],
         },
       ],
-      generationConfig: { temperature: 0, maxOutputTokens: 1024 },
+      generationConfig: { temperature: 0, maxOutputTokens: 4096 },
     }),
   });
 
@@ -52,11 +49,12 @@ async function callGemini(apiKey, imageParts, attempt = 1) {
   if (response.status === 429) {
     if (attempt >= 3) {
       const body = await response.json().catch(() => ({}));
-      const retryDelay =
-        body?.error?.details?.find((d) => d.retryDelay)?.retryDelay;
+      const retryDelay = body?.error?.details?.find(
+        (d) => d.retryDelay,
+      )?.retryDelay;
       const seconds = retryDelay ? parseInt(retryDelay) : 40;
       throw new Error(
-        `Превышен лимит Gemini API. Подожди ~${seconds} секунд и попробуй снова.`
+        `Превышен лимит Gemini API. Подожди ~${seconds} секунд и попробуй снова.`,
       );
     }
     await sleep(35000);
@@ -67,7 +65,7 @@ async function callGemini(apiKey, imageParts, attempt = 1) {
   if (response.status === 503 || response.status === 500) {
     if (attempt >= 4) {
       throw new Error(
-        "Серверы Gemini перегружены. Попробуй ещё раз через несколько секунд."
+        "Серверы Gemini перегружены. Попробуй ещё раз через несколько секунд.",
       );
     }
     // Экспоненциальная задержка: 3с → 6с → 12с
@@ -80,7 +78,7 @@ async function callGemini(apiKey, imageParts, attempt = 1) {
     const msg = body?.error?.message ?? (await response.text());
     if (response.status === 403)
       throw new Error(
-        "Ключ API недействителен. Создай новый ключ на aistudio.google.com/apikey и обнови GEMINI_API_KEY на Vercel."
+        "Ключ API недействителен. Создай новый ключ на aistudio.google.com/apikey и обнови GEMINI_API_KEY на Vercel.",
       );
     throw new Error(msg);
   }
@@ -96,7 +94,8 @@ export default async function handler(req, res) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return res.status(500).json({
-      error: "GEMINI_API_KEY не задан. Добавь его в Settings → Environment Variables на Vercel.",
+      error:
+        "GEMINI_API_KEY не задан. Добавь его в Settings → Environment Variables на Vercel.",
     });
   }
 
@@ -120,7 +119,24 @@ export default async function handler(req, res) {
     try {
       parsed = JSON.parse(clean);
     } catch {
-      return res.status(502).json({ error: "Gemini вернул не JSON: " + text });
+      // Попытка восстановить обрезанный JSON — закрываем незакрытые скобки
+      try {
+        let fixed = clean;
+        // Считаем незакрытые [ и { и закрываем их
+        const opens =
+          (fixed.match(/\[/g) || []).length - (fixed.match(/\]/g) || []).length;
+        const openBraces =
+          (fixed.match(/\{/g) || []).length - (fixed.match(/\}/g) || []).length;
+        // Убираем последнюю незакрытую строку (обрезанный никнейм)
+        fixed = fixed.replace(/,?\s*"[^"]*$/, "");
+        for (let i = 0; i < opens; i++) fixed += "]";
+        for (let i = 0; i < openBraces; i++) fixed += "}";
+        parsed = JSON.parse(fixed);
+      } catch {
+        return res
+          .status(502)
+          .json({ error: "Gemini вернул не JSON: " + text });
+      }
     }
 
     return res.status(200).json(parsed);
