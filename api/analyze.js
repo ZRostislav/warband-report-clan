@@ -31,59 +31,107 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-async function callGemini(apiKey, imageParts, attempt = 1) {
+// Собираем все доступные ключи из env: GEMINI_API_KEY, GEMINI_API_KEY_2, GEMINI_API_KEY_3 ...
+function getApiKeys() {
+  const keys = [];
+  // Основной ключ
+  if (process.env.GEMINI_API_KEY) keys.push(process.env.GEMINI_API_KEY);
+  // Дополнительные ключи: GEMINI_API_KEY_2, GEMINI_API_KEY_3, ...
+  for (let i = 2; i <= 10; i++) {
+    const k = process.env[`GEMINI_API_KEY_${i}`];
+    if (k) keys.push(k);
+  }
+  return keys;
+}
+
+async function callGeminiWithKey(apiKey, imageParts, attempt = 1) {
   const response = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      contents: [
-        {
-          parts: [{ text: PROMPT }, ...imageParts],
-        },
-      ],
+      contents: [{ parts: [{ text: PROMPT }, ...imageParts] }],
       generationConfig: { temperature: 0, maxOutputTokens: 4096 },
     }),
   });
 
-  // 429 — превышен лимит, ждём и повторяем (до 3 попыток)
-  if (response.status === 429) {
-    if (attempt >= 3) {
-      const body = await response.json().catch(() => ({}));
-      const retryDelay = body?.error?.details?.find(
-        (d) => d.retryDelay,
-      )?.retryDelay;
-      const seconds = retryDelay ? parseInt(retryDelay) : 40;
-      throw new Error(
-        `Превышен лимит Gemini API. Подожди ~${seconds} секунд и попробуй снова.`,
-      );
-    }
-    await sleep(35000);
-    return callGemini(apiKey, imageParts, attempt + 1);
-  }
-
-  // 503 / 500 — временная перегрузка серверов Gemini
+  // 503 / 500 — перегрузка серверов, повторяем с тем же ключом
   if (response.status === 503 || response.status === 500) {
     if (attempt >= 4) {
-      throw new Error(
-        "Серверы Gemini перегружены. Попробуй ещё раз через несколько секунд.",
-      );
+      throw { type: "overloaded" };
     }
-    // Экспоненциальная задержка: 3с → 6с → 12с
-    await sleep(3000 * Math.pow(2, attempt - 1));
-    return callGemini(apiKey, imageParts, attempt + 1);
+    await sleep(3000 * Math.pow(2, attempt - 1)); // 3с → 6с → 12с
+    return callGeminiWithKey(apiKey, imageParts, attempt + 1);
+  }
+
+  // 429 — лимит этого ключа исчерпан, сигнализируем чтобы переключиться
+  if (response.status === 429) {
+    const body = await response.json().catch(() => ({}));
+    const retryDelay = body?.error?.details?.find(
+      (d) => d.retryDelay,
+    )?.retryDelay;
+    throw { type: "quota", retryDelay };
+  }
+
+  // 403 — ключ недействителен
+  if (response.status === 403) {
+    throw { type: "invalid_key" };
   }
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
-    const msg = body?.error?.message ?? (await response.text());
-    if (response.status === 403)
-      throw new Error(
-        "Ключ API недействителен. Создай новый ключ на aistudio.google.com/apikey и обнови GEMINI_API_KEY на Vercel.",
-      );
-    throw new Error(msg);
+    throw {
+      type: "error",
+      message: body?.error?.message ?? `HTTP ${response.status}`,
+    };
   }
 
   return response.json();
+}
+
+// Перебирает все ключи по очереди, при 429 переходит к следующему
+async function callGemini(imageParts) {
+  const keys = getApiKeys();
+  if (keys.length === 0) {
+    throw new Error(
+      "Нет API ключей. Добавь GEMINI_API_KEY в Settings → Environment Variables на Vercel.",
+    );
+  }
+
+  let lastError = null;
+
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const keyLabel = i === 0 ? "основной" : `#${i + 1}`;
+
+    try {
+      const data = await callGeminiWithKey(key, imageParts);
+      return data; // успех
+    } catch (err) {
+      if (err.type === "quota") {
+        // Лимит этого ключа — пробуем следующий
+        lastError = `Ключ ${keyLabel}: лимит исчерпан`;
+        continue;
+      }
+      if (err.type === "invalid_key") {
+        lastError = `Ключ ${keyLabel}: недействителен`;
+        continue;
+      }
+      if (err.type === "overloaded") {
+        throw new Error(
+          "Серверы Gemini перегружены. Попробуй через несколько секунд.",
+        );
+      }
+      // Любая другая ошибка — пробрасываем
+      throw new Error(err.message ?? "Неизвестная ошибка Gemini");
+    }
+  }
+
+  // Все ключи исчерпаны
+  throw new Error(
+    `Все ключи исчерпали дневной лимит (RPD). ` +
+      `Добавь новые ключи (GEMINI_API_KEY_2, GEMINI_API_KEY_3...) или подожди до полуночи UTC. ` +
+      `Детали: ${lastError}`,
+  );
 }
 
 export default async function handler(req, res) {
@@ -91,26 +139,17 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return res.status(500).json({
-      error:
-        "GEMINI_API_KEY не задан. Добавь его в Settings → Environment Variables на Vercel.",
-    });
-  }
-
   const { images } = req.body;
   if (!images || !Array.isArray(images) || images.length === 0) {
     return res.status(400).json({ error: "Нет изображений" });
   }
 
-  // Строим parts: сначала промпт, затем все картинки
   const imageParts = images.map(({ base64, mimeType }) => ({
     inline_data: { mime_type: mimeType || "image/png", data: base64 },
   }));
 
   try {
-    const geminiData = await callGemini(apiKey, imageParts);
+    const geminiData = await callGemini(imageParts);
     const text = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
     const clean = text.replace(/```json|```/gi, "").trim();
@@ -119,15 +158,13 @@ export default async function handler(req, res) {
     try {
       parsed = JSON.parse(clean);
     } catch {
-      // Попытка восстановить обрезанный JSON — закрываем незакрытые скобки
+      // Восстанавливаем обрезанный JSON
       try {
         let fixed = clean;
-        // Считаем незакрытые [ и { и закрываем их
         const opens =
           (fixed.match(/\[/g) || []).length - (fixed.match(/\]/g) || []).length;
         const openBraces =
           (fixed.match(/\{/g) || []).length - (fixed.match(/\}/g) || []).length;
-        // Убираем последнюю незакрытую строку (обрезанный никнейм)
         fixed = fixed.replace(/,?\s*"[^"]*$/, "");
         for (let i = 0; i < opens; i++) fixed += "]";
         for (let i = 0; i < openBraces; i++) fixed += "}";
