@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MB Warband — Генератор отчётов</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f0f;
+      --bg2: #1a1a1a;
+      --bg3: #242424;
+      --border: #2e2e2e;
+      --border2: #3a3a3a;
+      --text: #e8e8e8;
+      --text2: #999;
+      --text3: #666;
+      --accent: #c8a84b;
+      --accent-dim: #8a6f2e;
+      --danger: #e05c5c;
+      --success: #5cb85c;
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      font-size: 13px;
+      color: var(--text3);
+      margin-top: 6px;
+    }
+
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      margin-bottom: 12px;
+    }
+
+    .card-label {
+      font-size: 12px;
+      color: var(--text3);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    /* Drop zone */
+    #drop-zone {
+      border: 1.5px dashed var(--border2);
+      border-radius: var(--radius);
+      padding: 2.5rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    #drop-zone:hover, #drop-zone.drag-over {
+      border-color: var(--accent-dim);
+      background: rgba(200,168,75,0.05);
+    }
+    #drop-zone svg { margin-bottom: 10px; opacity: 0.5; }
+    #drop-zone p { font-size: 14px; color: var(--text2); }
+    #drop-zone span { font-size: 12px; color: var(--text3); display: block; margin-top: 4px; }
+
+    #preview-container { display: none; margin-top: 12px; text-align: center; }
+    #preview-img {
+      max-width: 100%; max-height: 180px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    #preview-name { font-size: 12px; color: var(--text3); margin-top: 6px; }
+    #change-btn {
+      font-size: 12px; color: var(--accent); background: none;
+      border: none; cursor: pointer; margin-top: 4px; display: block; margin-inline: auto;
+    }
+
+    /* Grid inputs */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    label { font-size: 13px; color: var(--text2); display: block; margin-bottom: 6px; }
+
+    input[type="text"], input[type="date"] {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 14px;
+      padding: 8px 12px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="text"]:focus, input[type="date"]:focus {
+      border-color: var(--accent-dim);
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
+
+    /* Analyze button */
+    #analyze-btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--accent);
+      color: #0f0f0f;
+      letter-spacing: 0.3px;
+      transition: opacity 0.15s, transform 0.1s;
+      margin-bottom: 1.5rem;
+    }
+    #analyze-btn:hover { opacity: 0.9; }
+    #analyze-btn:active { transform: scale(0.99); }
+    #analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Loading */
+    #loading {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+      color: var(--text2);
+      font-size: 14px;
+    }
+    .spinner {
+      width: 28px; height: 28px;
+      border: 2.5px solid var(--border2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Result */
+    #result-section { display: none; }
+
+    .report-box {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-top: 10px;
+    }
+
+    #report-text {
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      color: var(--text);
+    }
+
+    .report-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+    .btn-copy, .btn-secondary {
+      flex: 1;
+      padding: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-copy {
+      background: var(--accent);
+      color: #0f0f0f;
+      border: none;
+    }
+    .btn-copy:hover { opacity: 0.85; }
+    .btn-secondary {
+      background: none;
+      color: var(--text2);
+      border: 1px solid var(--border2);
+    }
+    .btn-secondary:hover { border-color: var(--accent-dim); color: var(--accent); }
+
+    /* Players list */
+    .player-row {
+      display: grid;
+      grid-template-columns: 1fr 56px 56px auto;
+      gap: 8px;
+      align-items: center;
+      padding: 6px 8px;
+      background: var(--bg3);
+      border-radius: var(--radius);
+      margin-bottom: 6px;
+    }
+    .player-row input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border2);
+      border-radius: 0;
+      color: var(--text);
+      font-size: 13px;
+      padding: 2px 4px;
+    }
+    .player-row input:focus { border-bottom-color: var(--accent); }
+    .stat-badge {
+      font-size: 12px;
+      color: var(--text3);
+      text-align: center;
+    }
+    .btn-remove {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 0 4px;
+      opacity: 0.6;
+      transition: opacity 0.15s;
+    }
+    .btn-remove:hover { opacity: 1; }
+
+    .btn-add-player {
+      width: 100%;
+      background: none;
+      border: 1px dashed var(--border2);
+      color: var(--text3);
+      border-radius: var(--radius);
+      padding: 7px;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-add-player:hover { border-color: var(--accent-dim); color: var(--accent); }
+
+    /* Error */
+    #error-msg {
+      display: none;
+      background: rgba(224,92,92,0.1);
+      border: 1px solid rgba(224,92,92,0.3);
+      border-radius: var(--radius);
+      padding: 12px;
+      color: var(--danger);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    /* Score display */
+    .score-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 1rem;
+      background: var(--bg3);
+      border-radius: var(--radius);
+      margin-top: 10px;
+    }
+    .score-team { font-size: 13px; color: var(--text2); text-align: center; }
+    .score-num { font-size: 28px; font-weight: 700; color: var(--accent); }
+    .score-sep { font-size: 20px; color: var(--text3); }
+    .score-input {
+      width: 50px !important;
+      text-align: center;
+      font-size: 20px !important;
+      font-weight: 700;
+      color: var(--accent) !important;
+      background: var(--bg2) !important;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>⚔️ MB Warband — Отчёт</h1>
+    <p>Загрузи скриншот таблицы результатов — ИИ сам всё разберёт</p>
+  </header>
+
+  <div id="error-msg"></div>
+
+  <!-- Скриншот -->
+  <div class="card">
+    <div class="card-label">Скриншот таблицы результатов</div>
+    <div id="drop-zone"
+      onclick="document.getElementById('file-input').click()"
+      ondragover="event.preventDefault();this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      ondrop="handleDrop(event)">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M4 16l4-4 4 4 4-6 4 6"/><rect x="3" y="3" width="18" height="18" rx="2"/>
+      </svg>
+      <p>Перетащи скриншот или нажми для выбора</p>
+      <span>.png · .jpg · .webp</span>
+    </div>
+    <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFile(this.files[0])">
+    <div id="preview-container">
+      <img id="preview-img" alt="Скриншот">
+      <p id="preview-name"></p>
+      <button id="change-btn" onclick="resetImage()">Заменить</button>
+    </div>
+  </div>
+
+  <!-- Параметры -->
+  <div class="card">
+    <div class="card-label">Параметры боя</div>
+    <div class="grid-2" style="margin-bottom:12px;">
+      <div>
+        <label>Дата</label>
+        <input type="date" id="battle-date">
+      </div>
+      <div>
+        <label>Тип события</label>
+        <input type="text" id="event-type" placeholder="Поход, Война, ЛБ...">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <label>Наш клан</label>
+        <input type="text" id="clan-us" placeholder="[MD]" value="[MD]">
+      </div>
+      <div>
+        <label>Противник</label>
+        <input type="text" id="clan-enemy" placeholder="Legion_SvD">
+      </div>
+    </div>
+  </div>
+
+  <button id="analyze-btn" onclick="analyzeImage()">
+    ⚔️ Проанализировать и создать отчёт
+  </button>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <span id="loading-text">Анализирую скриншот...</span>
+  </div>
+
+  <!-- Результат -->
+  <div id="result-section">
+
+    <div class="card">
+      <div class="card-label">Счёт</div>
+      <div class="score-display">
+        <div class="score-team">
+          <div id="score-our-name" style="margin-bottom:4px;"></div>
+          <input type="number" class="score-input" id="score-us" min="0" max="99" onchange="refreshReport()">
+        </div>
+        <div class="score-sep">:</div>
+        <div class="score-team">
+          <div id="score-enemy-name" style="margin-bottom:4px;"></div>
+          <input type="number" class="score-input" id="score-enemy" min="0" max="99" onchange="refreshReport()">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Участники нашего клана</div>
+      <div id="players-list"></div>
+      <button class="btn-add-player" onclick="addPlayer()">+ Добавить игрока</button>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Готовый отчёт</div>
+      <div class="report-box">
+        <pre id="report-text"></pre>
+      </div>
+      <div class="report-actions">
+        <button class="btn-copy" onclick="copyReport()">📋 Копировать</button>
+        <button class="btn-secondary" onclick="resetAll()">Новый бой</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  const DAYS_RU = ['ВС','ПН','ВТ','СР','ЧТ','ПТ','СБ'];
+  const MONTHS_RU = ['ЯНВ','ФЕВ','МАР','АПР','МАЯ','ИЮН','ИЮЛ','АВГ','СЕН','ОКТ','НОЯ','ДЕК'];
+
+  let imageBase64 = null;
+  let imageType = 'image/jpeg';
+  let players = [];
+
+  // Дата по умолчанию
+  const today = new Date();
+  document.getElementById('battle-date').value = today.toISOString().split('T')[0];
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    const day = String(d.getDate()).padStart(2,'0');
+    const month = MONTHS_RU[d.getMonth()];
+    const year = d.getFullYear();
+    const dow = DAYS_RU[d.getDay()];
+    return `(${day}/${month}/${year}/${dow})`;
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('drop-zone').classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) handleFile(file);
+  }
+
+  function handleFile(file) {
+    if (!file) return;
+    imageType = file.type || 'image/jpeg';
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imageBase64 = e.target.result.split(',')[1];
+      document.getElementById('preview-img').src = e.target.result;
+      document.getElementById('preview-name').textContent = file.name;
+      document.getElementById('preview-container').style.display = 'block';
+      document.getElementById('drop-zone').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function resetImage() {
+    imageBase64 = null;
+    document.getElementById('preview-container').style.display = 'none';
+    document.getElementById('drop-zone').style.display = 'block';
+    document.getElementById('file-input').value = '';
+  }
+
+  async function analyzeImage() {
+    const btn = document.getElementById('analyze-btn');
+    const clanUs = document.getElementById('clan-us').value.trim() || '[MD]';
+    const clanEnemy = document.getElementById('clan-enemy').value.trim() || 'Enemy';
+
+    if (!imageBase64) { showError('Сначала загрузи скриншот!'); return; }
+
+    hideError();
+    btn.disabled = true;
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('result-section').style.display = 'none';
+
+    const msgs = [
+      'Анализирую таблицу результатов...',
+      'Извлекаю имена игроков...',
+      'Определяю счёт...',
+      'Формирую отчёт...'
+    ];
+    let mi = 0;
+    const ticker = setInterval(() => {
+      document.getElementById('loading-text').textContent = msgs[mi++ % msgs.length];
+    }, 1200);
+
+    try {
+      const mediaType = imageType === 'image/webp' ? 'image/webp'
+                      : imageType === 'image/png'  ? 'image/png'
+                      : 'image/jpeg';
+
+      const body = {
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: imageBase64 } },
+            { type: 'text', text: `You are analyzing a Mount & Blade Warband scoreboard screenshot.
+Extract ALL players and scores from the visible scoreboard table.
+Return ONLY valid JSON, no markdown, no backticks:
+{
+  "left_team": {
+    "name": "team name",
+    "score": 0,
+    "players": [{"name": "PlayerName", "kills": 0, "deaths": 0}]
+  },
+  "right_team": {
+    "name": "team name",
+    "score": 0,
+    "players": [{"name": "PlayerName", "kills": 0, "deaths": 0}]
+  }
+}
+Extract every player exactly as shown. Return only JSON.` }
+          ]
+        }]
+      };
+
+      const response = await fetch('/api/claude', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      const data = await response.json();
+      clearInterval(ticker);
+      document.getElementById('loading').style.display = 'none';
+
+      if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+
+      const text = data.content.map(c => c.text || '').join('');
+      let json;
+      try {
+        json = JSON.parse(text.replace(/```json|```/g,'').trim());
+      } catch(e) {
+        throw new Error('ИИ вернул нечитаемый ответ. Попробуй ещё раз.');
+      }
+
+      const clanUsKey = clanUs.toLowerCase().replace(/[\[\]]/g,'');
+      const leftPlayers = json.left_team?.players || [];
+      const rightPlayers = json.right_team?.players || [];
+
+      const leftMatch = leftPlayers.some(p => p.name.toLowerCase().includes(clanUsKey))
+                     || (json.left_team?.name || '').toLowerCase().includes(clanUsKey);
+
+      let ourTeam, enemyTeam, ourScore, enemyScore, ourName, enemyName;
+      if (leftMatch) {
+        ourTeam = leftPlayers; ourScore = json.left_team?.score || 0; ourName = json.left_team?.name || clanUs;
+        enemyTeam = rightPlayers; enemyScore = json.right_team?.score || 0; enemyName = json.right_team?.name || clanEnemy;
+      } else {
+        ourTeam = rightPlayers; ourScore = json.right_team?.score || 0; ourName = json.right_team?.name || clanUs;
+        enemyTeam = leftPlayers; enemyScore = json.left_team?.score || 0; enemyName = json.left_team?.name || clanEnemy;
+      }
+
+      players = ourTeam;
+
+      document.getElementById('score-us').value = ourScore;
+      document.getElementById('score-enemy').value = enemyScore;
+      document.getElementById('score-our-name').textContent = clanUs;
+      document.getElementById('score-enemy-name').textContent = clanEnemy;
+
+      renderPlayers();
+      refreshReport();
+
+      btn.disabled = false;
+      document.getElementById('result-section').style.display = 'block';
+
+    } catch(err) {
+      clearInterval(ticker);
+      document.getElementById('loading').style.display = 'none';
+      btn.disabled = false;
+      showError('Ошибка: ' + err.message);
+    }
+  }
+
+  function renderPlayers() {
+    const list = document.getElementById('players-list');
+    list.innerHTML = '';
+    players.forEach((p, i) => {
+      const row = document.createElement('div');
+      row.className = 'player-row';
+      row.innerHTML = `
+        <input type="text" value="${p.name}" onchange="players[${i}].name=this.value; refreshReport()">
+        <div class="stat-badge">К: ${p.kills}</div>
+        <div class="stat-badge">С: ${p.deaths}</div>
+        <button class="btn-remove" onclick="removePlayer(${i})" title="Удалить">×</button>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  function removePlayer(idx) {
+    players.splice(idx, 1);
+    renderPlayers();
+    refreshReport();
+  }
+
+  function addPlayer() {
+    players.push({ name: 'НовыйИгрок', kills: 0, deaths: 0 });
+    renderPlayers();
+    refreshReport();
+    const inputs = document.querySelectorAll('.player-row input');
+    inputs[inputs.length - 1].focus();
+    inputs[inputs.length - 1].select();
+  }
+
+  function refreshReport() {
+    const clanUs = document.getElementById('clan-us').value.trim() || '[MD]';
+    const clanEnemy = document.getElementById('clan-enemy').value.trim() || 'Enemy';
+    const eventType = document.getElementById('event-type').value.trim() || 'Поход';
+    const dateVal = document.getElementById('battle-date').value;
+    const scoreUs = document.getElementById('score-us').value;
+    const scoreEnemy = document.getElementById('score-enemy').value;
+
+    const dateStr = dateVal ? formatDate(dateVal) : '';
+    const names = players.map(p => p.name.replace(/^\[{1,2}MD\]{1,2}/i,'').trim()).filter(Boolean);
+
+    const report = `${dateStr} [LB]\n\n${eventType} ${clanUs} vs ${clanEnemy} ${scoreUs}:${scoreEnemy}\n\nУчастники\n${names.join('\n')}`;
+    document.getElementById('report-text').textContent = report;
+  }
+
+  function copyReport() {
+    const text = document.getElementById('report-text').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.btn-copy');
+      btn.textContent = '✓ Скопировано!';
+      setTimeout(() => { btn.textContent = '📋 Копировать'; }, 2000);
+    });
+  }
+
+  function resetAll() {
+    players = [];
+    imageBase64 = null;
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('preview-container').style.display = 'none';
+    document.getElementById('drop-zone').style.display = 'block';
+    document.getElementById('file-input').value = '';
+    hideError();
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.textContent = msg;
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function hideError() {
+    document.getElementById('error-msg').style.display = 'none';
+  }
+</script>
+</body>
+</html>
