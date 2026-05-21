@@ -1027,6 +1027,45 @@
           >
             Глашатай
           </button>
+          <button
+            class="tpl-tab"
+            onclick="setTemplate('24thBav')"
+            data-tpl="24thBav"
+          >
+            24thBav
+          </button>
+        </div>
+
+        <!-- Hide score toggle -->
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+          "
+        >
+          <label
+            style="
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              cursor: pointer;
+              margin: 0;
+              font-size: 13px;
+              color: var(--text-muted);
+              text-transform: none;
+              letter-spacing: 0;
+            "
+          >
+            <input
+              type="checkbox"
+              id="hide-score-toggle"
+              onchange="refreshReport()"
+              style="width: auto; accent-color: var(--accent); cursor: pointer"
+            />
+            <span data-i18n="hide_score_label">Скрыть счёт в отчёте</span>
+          </label>
         </div>
 
         <div class="report-box"><pre id="report-text"></pre></div>
@@ -1116,6 +1155,8 @@
           win: "ПОБЕДА",
           loss: "ПОРАЖЕНИЕ",
           draw: "НИЧЬЯ",
+          hide_score_label: "Скрыть счёт в отчёте",
+          tpl_24thBav: "24thBav",
         },
         en: {
           title: "📜 MB Warband — Report",
@@ -1183,6 +1224,8 @@
           win: "VICTORY",
           loss: "DEFEAT",
           draw: "DRAW",
+          hide_score_label: "Hide score in report",
+          tpl_24thBav: "24thBav",
         },
         uk: {
           title: "📜 MB Warband — Звіт",
@@ -1250,6 +1293,8 @@
           win: "ПЕРЕМОГА",
           loss: "ПОРАЗКА",
           draw: "НІЧИЯ",
+          hide_score_label: "Сховати рахунок у звіті",
+          tpl_24thBav: "24thBav",
         },
       };
 
@@ -1258,6 +1303,7 @@
       let players = [];
       let commanderIdx = -1; // index of the player marked as commander
       let imageFiles = [];
+      let bavPlayers = []; // [{name, rank, section}] for 24thBav template
 
       // === LANGUAGE ===
       function setLang(lang) {
@@ -1344,6 +1390,8 @@
             ? stripPrefix(players[commanderIdx])
             : "";
         const outcome = getOutcome(scoreUs, scoreEn);
+        const hideScore =
+          document.getElementById("hide-score-toggle")?.checked ?? false;
 
         switch (currentTemplate) {
           case "standard":
@@ -1357,6 +1405,7 @@
               scoreEn,
               commander,
               names,
+              hideScore,
             });
           case "compact":
             return buildCompact({
@@ -1369,6 +1418,7 @@
               scoreEn,
               commander,
               names,
+              hideScore,
             });
           case "detailed":
             return buildDetailed({
@@ -1382,6 +1432,7 @@
               commander,
               names,
               outcome,
+              hideScore,
             });
           case "herald":
             return buildHerald({
@@ -1395,6 +1446,16 @@
               commander,
               names,
               outcome,
+              hideScore,
+            });
+          case "24thBav":
+            return build24thBav({
+              clanEnemy,
+              eventType,
+              dateStr,
+              scoreUs,
+              scoreEn,
+              hideScore,
             });
           default:
             return "";
@@ -1411,6 +1472,7 @@
         scoreEn,
         commander,
         names,
+        hideScore,
       }) {
         const namesList =
           names.length > 0 ? names.map((n) => `🔸 ${n}`).join("\n") : "—";
@@ -1419,7 +1481,8 @@
         lines.push(`${t.report_event} ${eventType}`);
         lines.push("");
         lines.push(`🛡️ **${clanUs}** 🆚 **${clanEnemy}**`);
-        lines.push(`${t.report_score} **${scoreUs} : ${scoreEn}**`);
+        if (!hideScore)
+          lines.push(`${t.report_score} **${scoreUs} : ${scoreEn}**`);
         if (commander) lines.push(`${t.report_commander} ${commander}`);
         lines.push("");
         lines.push(`${t.report_players} (${names.length}):`);
@@ -1437,11 +1500,13 @@
         scoreEn,
         commander,
         names,
+        hideScore,
       }) {
         const namesList = names.length > 0 ? names.join(", ") : "—";
         let lines = [];
+        const scoreStr = hideScore ? "" : ` ${scoreUs}:${scoreEn}`;
         lines.push(
-          `**[${dateStr}] ${eventType} | ${clanUs} ${scoreUs}:${scoreEn} ${clanEnemy}**`,
+          `**[${dateStr}] ${eventType} | ${clanUs}${scoreStr} ${clanEnemy}**`,
         );
         if (commander) lines.push(`👑 ${commander}`);
         lines.push(`👥 (${names.length}): ${namesList}`);
@@ -1459,6 +1524,7 @@
         commander,
         names,
         outcome,
+        hideScore,
       }) {
         const namesList =
           names.length > 0
@@ -1474,9 +1540,10 @@
         lines.push(`${t.report_event} **${eventType}**`);
         lines.push(`───────────────────────────`);
         lines.push(`🏰 **${clanUs}** vs **${clanEnemy}**`);
-        lines.push(
-          `${t.report_score} \`${scoreUs} : ${scoreEn}\` — **${outcome}**`,
-        );
+        if (!hideScore)
+          lines.push(
+            `${t.report_score} \`${scoreUs} : ${scoreEn}\` — **${outcome}**`,
+          );
         lines.push(`───────────────────────────`);
         if (commander) {
           lines.push(`${t.report_commander} **${commander}**`);
@@ -1501,6 +1568,7 @@
         commander,
         names,
         outcome,
+        hideScore,
       }) {
         const namesList =
           names.length > 0 ? names.map((n) => `  ⚔ ${n}`).join("\n") : "  —";
@@ -1516,9 +1584,11 @@
         lines.push(intro);
         lines.push("");
         lines.push(`${outcomeEmoji} **${outcome}** ${outcomeEmoji}`);
-        lines.push(
-          `> **${clanUs}** \`${scoreUs} : ${scoreEn}\` **${clanEnemy}**`,
-        );
+        if (!hideScore)
+          lines.push(
+            `> **${clanUs}** \`${scoreUs} : ${scoreEn}\` **${clanEnemy}**`,
+          );
+        else lines.push(`> **${clanUs}** vs **${clanEnemy}**`);
         lines.push(`> 📍 *${eventType}* · 📅 *${dateStr}*`);
         lines.push("");
         if (commander) {
@@ -1535,6 +1605,65 @@
         lines.push(
           `*${currentLang === "en" ? "Glory to all who fought!" : currentLang === "uk" ? "Слава всім, хто бився!" : "Слава всем, кто сражался!"}* 🗡️`,
         );
+        return lines.join("\n");
+      }
+
+      function build24thBav({
+        clanEnemy,
+        eventType,
+        dateStr,
+        scoreUs,
+        scoreEn,
+        hideScore,
+      }) {
+        const SEP =
+          "--------------------------------------------------------------";
+        const SECTIONS = [
+          "Ст.Офіцерський склад",
+          "Офіцерський склад",
+          "Мл.Офіцерський склад",
+          "Гренадерський склад",
+          "Рядовий склад",
+          "Кадетський склад",
+          "Найманці",
+        ];
+
+        const outcome =
+          scoreUs > scoreEn
+            ? "Перемога"
+            : scoreUs < scoreEn
+              ? "Програш"
+              : "Нічия";
+        const scoreStr = hideScore ? "" : ` ${scoreUs}:${scoreEn}`;
+
+        const lines = [];
+        lines.push(`**КВ  на ${eventType} проти ${clanEnemy}**`);
+        lines.push(`***${outcome}${scoreStr}***`);
+        lines.push(SEP);
+
+        if (bavPlayers.length > 0) {
+          for (const section of SECTIONS) {
+            const group = bavPlayers.filter((p) => p.section === section);
+            if (group.length === 0) continue;
+            lines.push(section);
+            for (const p of group) {
+              lines.push(`${p.rank}: ${p.name} `);
+            }
+            lines.push(SEP);
+          }
+        } else {
+          // Fallback: flat list under Рядовий склад
+          const names = players.map(stripPrefix).filter(Boolean);
+          if (names.length > 0) {
+            lines.push("Рядовий склад");
+            for (const n of names) lines.push(`Schutze: ${n} `);
+            lines.push(SEP);
+          }
+        }
+
+        lines.push("Gott schütze den König");
+        lines.push(SEP);
+        lines.push(`(${dateStr})`);
         return lines.join("\n");
       }
 
@@ -1658,7 +1787,10 @@
           const response = await fetch("/api/analyze", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ images }),
+            body: JSON.stringify({
+              images,
+              mode: currentTemplate === "24thBav" ? "24thBav" : "standard",
+            }),
           });
           setProgress(80, "Расшифровка свитков...");
           const result = await response.json();
@@ -1706,8 +1838,37 @@
         }
         const team1 = data.players?.team1 ?? [];
         const team2 = data.players?.team2 ?? [];
-        const all = [...team1, ...team2];
         const badge = document.getElementById("players-badge");
+
+        // Check if 24thBav mode (structured players with rank/section)
+        const isStructured = team1.length > 0 && typeof team1[0] === "object";
+
+        if (isStructured) {
+          // 24thBav mode: store structured data
+          bavPlayers = [...team1, ...team2];
+          if (bavPlayers.length === 0) {
+            badge.textContent = i18n[currentLang].badge_not_found;
+            badge.className = "badge badge-warn";
+            badge.style.display = "inline-block";
+            return;
+          }
+          // Also populate flat players list for display/editing
+          players = bavPlayers.map((p) => p.name);
+          commanderIdx = -1;
+          renderPlayers();
+          refreshReport();
+          badge.textContent = i18n[currentLang].badge_found.replace(
+            "{n}",
+            bavPlayers.length,
+          );
+          badge.className = "badge badge-ok";
+          badge.style.display = "inline-block";
+          return;
+        }
+
+        // Standard mode
+        bavPlayers = [];
+        const all = [...team1, ...team2];
         if (all.length === 0) {
           badge.textContent = i18n[currentLang].badge_not_found;
           badge.className = "badge badge-warn";
@@ -1827,6 +1988,7 @@
 
       function resetAll() {
         players = [];
+        bavPlayers = [];
         commanderIdx = -1;
         document.getElementById("clan-us").value = "";
         document.getElementById("clan-enemy").value = "";
